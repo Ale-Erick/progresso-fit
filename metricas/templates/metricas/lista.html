@@ -1,30 +1,138 @@
 {% extends 'base.html' %}
 {% block title %}Evolução - ProgressoFit{% endblock %}
 {% block content %}
-<h2>Evolução corporal</h2>
-<a href="{% url 'metricas:registrar' %}" class="btn btn-success mb-3">Registrar nova medição</a>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Data</th>
-            <th>Peso (kg)</th>
-            <th>Altura (m)</th>
-            <th>% gordura</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for metrica in metricas %}
-        <tr>
-            <td>{{ metrica.data|date:"d/m/Y" }}</td>
-            <td>{{ metrica.peso }}</td>
-            <td>{{ metrica.altura }}</td>
-            <td>{{ metrica.percentual_gordura|default_if_none:"-" }}</td>
-            <td><a href="{% url 'metricas:detalhe' metrica.id %}" class="btn btn-sm btn-outline-info">Detalhes</a></td>
-        </tr>
-    {% empty %}
-        <tr><td colspan="5">Nenhuma medição cadastrada.</td></tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="pf-page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div>
+        <h1>Evolução corporal</h1>
+        <p>Acompanhe suas mudanças físicas ao longo do tempo</p>
+    </div>
+    <a href="{% url 'metricas:registrar' %}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i> Registrar medição</a>
+</div>
+
+{% if ultima %}
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="pf-stat">
+            <div class="pf-stat-label">Peso atual</div>
+            <div class="pf-stat-value text-success">{{ ultima.peso }} <small>kg</small></div>
+            <div class="pf-stat-foot">em {{ ultima.data|date:"d/m/Y" }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="pf-stat">
+            <div class="pf-stat-label">Altura</div>
+            <div class="pf-stat-value">{{ ultima.altura }} <small>m</small></div>
+            <div class="pf-stat-foot">última medição</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="pf-stat">
+            <div class="pf-stat-label">Gordura corporal</div>
+            <div class="pf-stat-value">{{ ultima.percentual_gordura|default_if_none:"-" }} <small>%</small></div>
+            <div class="pf-stat-foot">última medição</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="pf-stat">
+            <div class="pf-stat-label">Massa magra</div>
+            <div class="pf-stat-value">{{ massa_magra|default_if_none:"-" }} <small>kg</small></div>
+            <div class="pf-stat-foot">calculada pelo % de gordura</div>
+        </div>
+    </div>
+</div>
+
+<div class="pf-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="pf-card-title mb-0">Progresso</h2>
+        <select id="serie" class="form-select form-select-sm w-auto" aria-label="Métrica exibida no gráfico">
+            <option value="peso">Peso (kg)</option>
+            <option value="gordura">Gordura (%)</option>
+        </select>
+    </div>
+    <div class="pf-chart-box"><canvas id="grafico-evolucao"></canvas></div>
+</div>
+{% endif %}
+
+<div class="pf-card">
+    <h2 class="pf-card-title">Histórico</h2>
+    {% if metricas %}
+    <div class="table-responsive">
+        <table class="table table-hover pf-table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Peso (kg)</th>
+                    <th>Altura (m)</th>
+                    <th>Gordura (%)</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for metrica in metricas %}
+                <tr>
+                    <td>{{ metrica.data|date:"d/m/Y" }}</td>
+                    <td>{{ metrica.peso }}</td>
+                    <td>{{ metrica.altura }}</td>
+                    <td>{{ metrica.percentual_gordura|default_if_none:"-" }}</td>
+                    <td class="text-end"><a href="{% url 'metricas:detalhe' metrica.id %}" class="btn btn-sm btn-ghost">Detalhes</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="pf-empty">
+        <i class="bi bi-clipboard-data"></i>
+        <p class="mb-3">Você ainda não registrou nenhuma medição.</p>
+        <a href="{% url 'metricas:registrar' %}" class="btn btn-outline-success">Registrar primeira medição</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if ultima %}
+{{ grafico|json_script:"dados-grafico" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    (function () {
+        var dados = JSON.parse(document.getElementById("dados-grafico").textContent);
+        var verde = "#22c55e";
+        var grade = "rgba(255, 255, 255, .06)";
+        var texto = "#9aa1ad";
+
+        var grafico = new Chart(document.getElementById("grafico-evolucao"), {
+            type: "line",
+            data: {
+                labels: dados.datas,
+                datasets: [{
+                    label: "Peso (kg)",
+                    data: dados.peso,
+                    borderColor: verde,
+                    backgroundColor: "rgba(34, 197, 94, .12)",
+                    pointBackgroundColor: verde,
+                    fill: true,
+                    tension: .35,
+                    spanGaps: true
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: grade }, ticks: { color: texto } },
+                    y: { grid: { color: grade }, ticks: { color: texto } }
+                }
+            }
+        });
+
+        document.getElementById("serie").addEventListener("change", function () {
+            var ds = grafico.data.datasets[0];
+            ds.data = dados[this.value];
+            ds.label = this.options[this.selectedIndex].text;
+            grafico.update();
+        });
+    })();
+</script>
+{% endif %}
 {% endblock %}
