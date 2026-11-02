@@ -1,23 +1,34 @@
 {% extends 'base.html' %}
 {% block title %}Painel do Especialista - ProgressoFit{% endblock %}
 {% block content %}
-<h2 class="mb-2">Painel de Validação</h2>
-<p class="text-secondary mb-4">Acompanhe e valide os planos alimentares submetidos pelos alunos.</p>
+<div class="pf-page-header">
+    <h1>Painel de validação</h1>
+    <p>Revise, ajuste, aprove ou rejeite os planos alimentares dos alunos</p>
+</div>
+
+<div class="d-flex gap-2 p-3 mb-4 rounded-3 border border-info-subtle text-info-emphasis small">
+    <i class="bi bi-info-circle"></i>
+    <span>Apenas especialistas com status <strong>verificado</strong> podem revisar planos. <a href="{% url 'contas:verificacao' %}">Solicitar verificação</a></span>
+</div>
 
 {% for plano in planos %}
-    <div class="card p-3 mb-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <h5>{{ plano.titulo }} - <small class="text-secondary">Aluno: {{ plano.user.username }}</small></h5>
-            <span class="badge bg-warning text-dark">{{ plano.status }}</span>
+    <div class="pf-card pf-plan {% if plano.status == 'Pendente' %}warning{% elif plano.status == 'Rejeitado' %}danger{% else %}success{% endif %} mb-3">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-2 mb-2">
+            <div>
+                <h2 class="h6 fw-semibold mb-1">{{ plano.titulo }}</h2>
+                <small class="text-secondary"><i class="bi bi-person me-1"></i> Aluno: {{ plano.user.username }} · {{ plano.created_at|date:"d/m/Y" }}</small>
+            </div>
+            <span class="pf-badge {% if plano.status == 'Pendente' %}warning{% elif plano.status == 'Rejeitado' %}danger{% else %}success{% endif %}">{{ plano.status }}</span>
         </div>
-        <p class="my-2">{{ plano.descricao }}</p>
-        <div class="d-flex gap-2 mt-2">
-            <button class="btn btn-sm btn-success" disabled>Aprovar</button>
-            <button class="btn btn-sm btn-outline-warning" disabled>Ajustar</button>
-            <button class="btn btn-sm btn-outline-danger" disabled>Rejeitar</button>
-        </div>
+        <p class="text-secondary my-3" style="white-space: pre-line;">{{ plano.descricao|truncatechars:180 }}</p>
+        <a href="{% url 'planos:revisar' plano.id %}" class="btn btn-sm {% if plano.status == 'Pendente' %}btn-success{% else %}btn-ghost{% endif %}">
+            <i class="bi bi-clipboard-check me-1"></i> {% if plano.status == 'Pendente' %}Revisar plano{% else %}Ver revisão{% endif %}
+        </a>
     </div>
 {% empty %}
-    <p>Nenhum plano pendente de validação.</p>
+    <div class="pf-card pf-empty">
+        <i class="bi bi-inbox"></i>
+        <p class="mb-0">Nenhum plano aguardando validação.</p>
+    </div>
 {% endfor %}
 {% endblock %}

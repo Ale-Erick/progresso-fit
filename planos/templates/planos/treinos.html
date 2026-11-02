@@ -1,18 +1,33 @@
 {% extends 'base.html' %}
 {% block title %}Treinos - ProgressoFit{% endblock %}
 {% block content %}
-<h2 class="mb-4">Meus Treinos</h2>
-<div class="row">
+<div class="pf-page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div>
+        <h1>Meus treinos</h1>
+        <p>Fichas de treino adequadas ao seu nível de conhecimento corporal</p>
+    </div>
+    <button type="button" class="btn btn-success" disabled title="Disponível em breve"><i class="bi bi-stars me-1"></i> Gerar treino com IA</button>
+</div>
+
+<div class="row g-4">
     {% for treino in treinos %}
-        <div class="col-md-6 mb-3">
-            <div class="card p-3">
-                <h5 class="text-success">{{ treino.titulo }}</h5>
-                <p>{{ treino.descricao }}</p>
-                <small class="text-secondary">Criado em {{ treino.created_at|date:"d/m/Y" }}</small>
+        <div class="col-md-6 col-xl-4">
+            <div class="pf-card h-100 d-flex flex-column">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="pf-icon-box sm"><i class="bi bi-lightning-charge"></i></span>
+                    <h2 class="h5 fw-semibold mb-0">{{ treino.titulo }}</h2>
+                </div>
+                <p class="text-secondary flex-grow-1" style="white-space: pre-line;">{{ treino.descricao }}</p>
+                <small class="text-secondary"><i class="bi bi-calendar3 me-1"></i> Criado em {{ treino.created_at|date:"d/m/Y" }}</small>
             </div>
         </div>
     {% empty %}
-        <div class="col-12"><p>Nenhum treino cadastrado.</p></div>
+        <div class="col-12">
+            <div class="pf-card pf-empty">
+                <i class="bi bi-lightning-charge"></i>
+                <p class="mb-0">Nenhum treino cadastrado ainda.</p>
+            </div>
+        </div>
     {% endfor %}
 </div>
 {% endblock %}
