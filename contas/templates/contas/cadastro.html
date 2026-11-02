@@ -4,34 +4,45 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card p-4">
-            <h2 class="text-center mb-4">Criar nova conta</h2>
-            <form method="post">
+    <div class="col-md-8 col-lg-6">
+        <div class="pf-card p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <span class="pf-icon-box"><i class="bi bi-person-plus"></i></span>
+                <div>
+                    <h1 class="h3 fw-bold mb-0">Criar nova conta</h1>
+                    <p class="text-secondary mb-0">Comece a acompanhar sua evolução</p>
+                </div>
+            </div>
+            <form method="post" class="pf-validar" novalidate>
                 {% csrf_token %}
                 <div class="mb-3">
-                    <label for="nome_completo" class="form-label">Nome Completo</label>
-                    <input type="text" id="nome_completo" name="nome_completo" class="form-control" placeholder="Ex: Alejandro Silva" required>
+                    <label for="nome_completo" class="form-label">Nome completo</label>
+                    <input type="text" id="nome_completo" name="nome_completo" class="form-control" placeholder="Ex: Maria Souza" maxlength="150" required>
+                    <div class="invalid-feedback">Informe seu nome completo.</div>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail</label>
                     <input type="email" id="email" name="email" class="form-control" placeholder="seu@email.com" required>
+                    <div class="invalid-feedback">Informe um e-mail válido.</div>
+                    <div class="form-text">Enviaremos um link para confirmar seu e-mail antes do primeiro acesso.</div>
                 </div>
-                <div class="mb-3">
-                    <label for="username" class="form-label">Nome de Usuário</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Escolha um nome de usuário" required>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <label for="password" class="form-label">Senha</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Crie uma senha forte" minlength="8" required>
+                        <div class="invalid-feedback">A senha deve ter pelo menos 8 caracteres.</div>
+                    </div>
+                    <div class="col-sm-6 mb-4">
+                        <label for="password_confirm" class="form-label">Confirmar senha</label>
+                        <input type="password" id="password_confirm" name="password_confirm" class="form-control" placeholder="Repita a senha" data-confirma="password" required>
+                        <div class="invalid-feedback">As senhas não coincidem.</div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Senha</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Crie uma senha forte" required>
-                </div>
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-success">Criar Conta</button>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success py-2">Criar conta</button>
                 </div>
             </form>
-            <div class="text-center mt-3">
-                <small class="text-secondary">Já possui conta? <a href="{% url 'contas:login' %}" class="text-success">Faça login</a></small>
-            </div>
+            <p class="text-center text-secondary small mt-4 mb-0">Já possui conta? <a href="{% url 'contas:login' %}">Faça login</a></p>
         </div>
     </div>
 </div>

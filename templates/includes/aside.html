@@ -1,8 +1,9 @@
-<aside class="card p-3 mb-3">
-    <h5>Atalhos</h5>
-    <ul class="list-unstyled mb-0">
-        <li><a href="{% url 'metricas:registrar' %}">Registrar uma medição</a></li>
-        <li><a href="{% url 'metricas:evolucao' %}">Ver minha evolução</a></li>
-        <li><a href="{% url 'planos:treinos' %}">Meus treinos</a></li>
-    </ul>
+<aside class="pf-card{% if altura_total %} h-100{% endif %}">
+    <h2 class="pf-card-title">Atalhos</h2>
+    <nav class="pf-shortcuts d-flex flex-column gap-1">
+        <a href="{% url 'metricas:registrar' %}"><i class="bi bi-plus-circle"></i> Registrar uma medição</a>
+        <a href="{% url 'metricas:evolucao' %}"><i class="bi bi-graph-up-arrow"></i> Ver minha evolução</a>
+        <a href="{% url 'planos:treinos' %}"><i class="bi bi-lightning-charge"></i> Meus treinos</a>
+        <a href="{% url 'planos:nutricao' %}"><i class="bi bi-egg-fried"></i> Plano alimentar</a>
+    </nav>
 </aside>

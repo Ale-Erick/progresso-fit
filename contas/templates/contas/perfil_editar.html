@@ -4,34 +4,58 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card p-4">
-            <h2 class="mb-4">Editar Perfil</h2>
-            <form method="post">
+    <div class="col-lg-8">
+        <div class="pf-card p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <span class="pf-icon-box"><i class="bi bi-person-gear"></i></span>
+                <div>
+                    <h1 class="h3 fw-bold mb-0">Editar perfil</h1>
+                    <p class="text-secondary mb-0">Atualize suas informações pessoais</p>
+                </div>
+            </div>
+            <form method="post" enctype="multipart/form-data" class="pf-validar" novalidate>
                 {% csrf_token %}
-                <div class="mb-3">
-                    <label for="nome_completo" class="form-label">Nome Completo</label>
-                    <input type="text" id="nome_completo" name="nome_completo" class="form-control" value="Alejandro Silva" required>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="pf-avatar" id="foto-preview"><i class="bi bi-person"></i></span>
+                    <div class="flex-grow-1">
+                        <label for="foto" class="form-label">Foto de perfil</label>
+                        <input type="file" id="foto" name="foto" class="form-control" accept="image/*" data-tipos="image/">
+                        <div class="invalid-feedback">Envie uma imagem.</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <label for="username" class="form-label">Nome de usuário</label>
+                        <input type="text" id="username" name="username" class="form-control" value="mariasouza" pattern="[\w.@+\-]+" maxlength="150" required>
+                        <div class="invalid-feedback">Use letras, números e . @ + - _ (sem espaços).</div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <label for="nome_completo" class="form-label">Nome completo</label>
+                        <input type="text" id="nome_completo" name="nome_completo" class="form-control" value="Maria Souza" maxlength="150" required>
+                        <div class="invalid-feedback">Informe seu nome completo.</div>
+                    </div>
                 </div>
                 <div class="mb-3">
-                    <label for="nivel_conhecimento" class="form-label">Nível de Conhecimento</label>
-                    <select id="nivel_conhecimento" name="nivel_conhecimento" class="form-select">
+                    <label for="nivel_conhecimento" class="form-label">Nível de conhecimento corporal</label>
+                    <select id="nivel_conhecimento" name="nivel_conhecimento" class="form-select" required>
                         <option value="Iniciante" selected>Iniciante</option>
                         <option value="Intermediário">Intermediário</option>
                         <option value="Avançado">Avançado</option>
                     </select>
+                    <div class="form-text">Grau de controle consciente que você tem sobre cada movimento e músculo.</div>
                 </div>
                 <div class="mb-3">
-                    <label for="descricao" class="form-label">Descrição / Biografia</label>
-                    <textarea id="descricao" name="descricao" class="form-control" rows="3">Focado em manter a constância nos treinos e melhorar o condicionamento físico.</textarea>
+                    <label for="descricao" class="form-label">Descrição</label>
+                    <textarea id="descricao" name="descricao" class="form-control" rows="3" maxlength="150" data-contador="descricao-contador">Focada em manter a constância nos treinos e melhorar o condicionamento físico.</textarea>
+                    <div class="form-text d-flex justify-content-between"><span>Máximo de 150 caracteres.</span><span id="descricao-contador"></span></div>
                 </div>
-                <div class="mb-3 form-check">
+                <div class="mb-4 form-check">
                     <input type="checkbox" class="form-check-input" id="publico" name="publico">
                     <label class="form-check-label" for="publico">Tornar perfil público para outros usuários</label>
                 </div>
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">Salvar Alterações</button>
-                    <a href="{% url 'contas:perfil' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success px-4">Salvar alterações</button>
+                    <a href="{% url 'contas:perfil' %}" class="btn btn-ghost px-4">Cancelar</a>
                 </div>
             </form>
         </div>

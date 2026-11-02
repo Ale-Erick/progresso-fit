@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirme seu e-mail - ProgressoFit{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-5">
+        <div class="pf-card p-4 p-md-5 text-center">
+            <span class="pf-icon-box mx-auto mb-3"><i class="bi bi-envelope-check"></i></span>
+            <h1 class="h3 fw-bold">Confirme seu e-mail</h1>
+            <p class="text-secondary">Sua conta foi criada! Enviamos um link de confirmação para o e-mail informado. Clique nele para ativar sua conta e fazer o primeiro acesso.</p>
+
+            <div class="d-flex gap-2 p-3 my-4 rounded-3 border border-warning-subtle text-warning-emphasis small text-start">
+                <i class="bi bi-clock-history"></i>
+                <span>O link é de uso único e expira após algum tempo. Enquanto o e-mail não for confirmado, não será possível entrar.</span>
+            </div>
+
+            <div class="d-grid gap-2">
+                <a href="{% url 'contas:login' %}" class="btn btn-success py-2">Ir para o login</a>
+                <button type="button" class="btn btn-ghost py-2" disabled>Reenviar e-mail</button>
+            </div>
+            <p class="text-secondary small mt-4 mb-0">Não encontrou? Verifique a caixa de spam.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
