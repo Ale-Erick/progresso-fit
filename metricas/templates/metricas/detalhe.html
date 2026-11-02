@@ -1,13 +1,64 @@
 {% extends 'base.html' %}
 {% block title %}Detalhes da Medição - ProgressoFit{% endblock %}
 {% block content %}
-<h2>Medição de {{ metrica.data|date:"d/m/Y" }}</h2>
-<div class="card p-3">
-    <p><strong>Usuário:</strong> {{ metrica.user.username }}</p>
-    <p><strong>Peso:</strong> {{ metrica.peso }} kg</p>
-    <p><strong>Altura:</strong> {{ metrica.altura }} m</p>
-    <p><strong>% de gordura:</strong> {{ metrica.percentual_gordura|default_if_none:"-" }}</p>
-    <p><strong>Cintura:</strong> {{ metrica.cintura|default_if_none:"-" }} cm</p>
+<div class="pf-page-header">
+    <a href="{% url 'metricas:evolucao' %}" class="text-secondary small"><i class="bi bi-arrow-left me-1"></i> Voltar para evolução</a>
+    <h1 class="mt-2">Medição de {{ metrica.data|date:"d/m/Y" }}</h1>
+    <p>Registrada por {{ metrica.user.username }}</p>
 </div>
-<a href="{% url 'metricas:evolucao' %}" class="btn btn-secondary mt-3">Voltar</a>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="pf-stat">
+            <div class="pf-stat-label">Peso</div>
+            <div class="pf-stat-value text-success">{{ metrica.peso }} <small>kg</small></div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="pf-stat">
+            <div class="pf-stat-label">Altura</div>
+            <div class="pf-stat-value">{{ metrica.altura }} <small>m</small></div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="pf-stat">
+            <div class="pf-stat-label">Gordura corporal</div>
+            <div class="pf-stat-value">{{ metrica.percentual_gordura|default_if_none:"-" }} <small>%</small></div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="pf-stat">
+            <div class="pf-stat-label">Gordura visceral</div>
+            <div class="pf-stat-value">{{ metrica.gordura_visceral|default_if_none:"-" }}</div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h5 fw-semibold mb-3">Circunferências</h2>
+<div class="row g-4 mb-4">
+    {% for grupo, medidas in circunferencias %}
+    <div class="col-md-6 col-lg-4">
+        <div class="pf-card h-100">
+            <h3 class="pf-card-title">{{ grupo }}</h3>
+            <div class="pf-data-list">
+                {% for rotulo, valor in medidas %}
+                <div class="pf-data-item"><span>{{ rotulo }}</span><strong>{% if valor is not None %}{{ valor }} cm{% else %}-{% endif %}</strong></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="pf-card h-100">
+            <h2 class="pf-card-title">Metabolismo</h2>
+            <div class="pf-data-list">
+                <div class="pf-data-item"><span>Metabolismo basal</span><strong>{{ metrica.metabolismo_basal|default_if_none:"-" }} kcal</strong></div>
+                <div class="pf-data-item"><span>Registrado em</span><strong>{{ metrica.created_at|date:"d/m/Y H:i" }}</strong></div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

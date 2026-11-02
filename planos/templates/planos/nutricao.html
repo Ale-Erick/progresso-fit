@@ -1,21 +1,68 @@
 {% extends 'base.html' %}
 {% block title %}Nutrição - ProgressoFit{% endblock %}
 {% block content %}
-<h2 class="mb-4">Planos Alimentares</h2>
-<div class="row">
-    {% for plano in planos %}
-        <div class="col-md-6 mb-3">
-            <div class="card p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="mb-0">{{ plano.titulo }}</h5>
-                    <span class="badge bg-info">{{ plano.status }}</span>
-                </div>
-                <p>{{ plano.descricao }}</p>
-                <small class="text-secondary">Acompanhamento: {{ plano.especialista|default:"Pendente de atribuição" }}</small>
+<div class="pf-page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div>
+        <h1>Plano alimentar</h1>
+        <p>Planos sugeridos e revisados por especialistas verificados</p>
+    </div>
+    <button type="button" class="btn btn-success" disabled title="Disponível em breve"><i class="bi bi-stars me-1"></i> Solicitar plano alimentar</button>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 fw-semibold mb-0">Meus planos</h2>
+            <div class="d-flex gap-3 small text-secondary">
+                <span><i class="bi bi-circle-fill text-warning me-1"></i> Pendente</span>
+                <span><i class="bi bi-circle-fill text-success me-1"></i> Aprovado</span>
             </div>
         </div>
-    {% empty %}
-        <div class="col-12"><p>Nenhum plano alimentar cadastrado.</p></div>
-    {% endfor %}
+
+        {% for plano in planos %}
+            {% if plano.status == "Aprovado" or plano.status == "Ajustado" %}
+                <div class="pf-card pf-plan success mb-3">
+                    <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                        <h3 class="h6 fw-semibold mb-0">{{ plano.titulo }}</h3>
+                        <span class="pf-badge success"><i class="bi bi-check-circle"></i> {{ plano.status }}</span>
+                    </div>
+                    <p class="text-secondary mb-2" style="white-space: pre-line;">{{ plano.descricao }}</p>
+                    <small class="text-secondary"><i class="bi bi-person-check me-1"></i> Revisado por {{ plano.especialista|default:"especialista" }}</small>
+                </div>
+            {% elif plano.status == "Rejeitado" %}
+                <div class="pf-card pf-plan danger mb-3">
+                    <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                        <h3 class="h6 fw-semibold mb-0">{{ plano.titulo }}</h3>
+                        <span class="pf-badge danger"><i class="bi bi-x-circle"></i> Rejeitado</span>
+                    </div>
+                    <p class="text-secondary mb-0">Este plano foi rejeitado pelo especialista e não será exibido.</p>
+                </div>
+            {% else %}
+                <div class="pf-card pf-plan warning mb-3">
+                    <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                        <h3 class="h6 fw-semibold mb-0">{{ plano.titulo }}</h3>
+                        <span class="pf-badge warning"><i class="bi bi-clock"></i> Pendente</span>
+                    </div>
+                    <p class="text-secondary mb-0">Aguardando revisão de um especialista. O conteúdo será liberado após a aprovação.</p>
+                </div>
+            {% endif %}
+        {% empty %}
+            <div class="pf-card pf-empty">
+                <i class="bi bi-egg-fried"></i>
+                <p class="mb-0">Nenhum plano alimentar cadastrado ainda.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="col-lg-4">
+        <div class="pf-card mb-4">
+            <h2 class="pf-card-title">Como funciona</h2>
+            <div class="d-flex gap-3">
+                <span class="pf-icon-box sm"><i class="bi bi-clipboard-check"></i></span>
+                <p class="text-secondary small mb-0">Todo plano alimentar começa como <strong class="text-warning">pendente</strong> e só aparece para você depois de aprovado ou ajustado por um nutricionista, educador físico ou médico do esporte verificado.</p>
+            </div>
+        </div>
+        {% include 'includes/aside.html' %}
+    </div>
 </div>
 {% endblock %}
