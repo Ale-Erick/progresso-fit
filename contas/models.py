@@ -26,7 +26,7 @@ class Perfil(models.Model):
 class Especialista(models.Model):
     AREA_CHOICES = (
         ("Nutricionista", "Nutricionista"),
-        ("Educador fisico", "Educador fisico"),
+        ("Educador fisico", "Educador físico"),
         ("Médico do esporte", "Médico do esporte"),
     )
     STATUS_CHOICES = (
@@ -45,3 +45,11 @@ class Especialista(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.area_atuacao}"
+
+    @property
+    def nome(self):
+        # nome de exibição: perfil, depois nome do usuário, depois username
+        perfil = getattr(self.user, "perfil", None)
+        if perfil and perfil.nome_completo:
+            return perfil.nome_completo
+        return self.user.get_full_name() or self.user.username

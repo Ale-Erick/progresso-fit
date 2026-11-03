@@ -1,6 +1,11 @@
+import re
+
 from django.contrib.auth.models import User
 from django.db import models
 from contas.models import Especialista
+
+# linha no formato "Supino reto 4x10" (nome, séries e repetições)
+FORMATO_EXERCICIO = re.compile(r"^(?P<nome>.+?)\s+(?P<series>\d+)\s*[xX×]\s*(?P<reps>\d+(?:-\d+)?)\s*$")
 
 
 class Treino(models.Model):
@@ -11,6 +16,20 @@ class Treino(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    def exercicios(self):
+        # cada linha da descrição vira um exercício; séries e repetições quando no formato "4x10"
+        lista = []
+        for linha in self.descricao.splitlines():
+            linha = linha.strip().lstrip("-• ").strip()
+            if not linha:
+                continue
+            achou = FORMATO_EXERCICIO.match(linha)
+            if achou:
+                lista.append({"nome": achou["nome"], "series": achou["series"], "reps": achou["reps"]})
+            else:
+                lista.append({"nome": linha, "series": None, "reps": None})
+        return lista
 
 
 class PlanoAlimentar(models.Model):

@@ -206,6 +206,39 @@ a { text-decoration: none; }
 
 .form-text { color: var(--pf-muted); }
 
+/* Texto de ajuda logo abaixo do rótulo, antes do campo */
+.form-label + .form-text,
+.form-label + .form-text + .form-text {
+    margin-top: -.35rem;
+    margin-bottom: .5rem;
+}
+
+/* Campos obrigatórios: * no rótulo e legenda no fim do formulário */
+.pf-obrigatorio::after { content: " *"; color: #ef4444; }
+
+.pf-legenda-obrigatorio { font-size: .85rem; color: var(--pf-muted); margin-bottom: .75rem; }
+.pf-legenda-obrigatorio span { color: #ef4444; }
+
+/* Regras da senha (cadastro) */
+.pf-regras { list-style: none; padding: 0; margin: 0 0 1.25rem; font-size: .85rem; color: var(--pf-muted); }
+.pf-regras li { display: flex; align-items: center; gap: .45rem; padding: .15rem 0; }
+.pf-regras li.ok { color: var(--pf-green); }
+
+/* Mensagens do sistema */
+.pf-alert { border-radius: 12px; border: 1px solid; }
+.pf-alert-sucesso { background: var(--pf-green-soft); border-color: rgba(34, 197, 94, .35); color: #86efac; }
+.pf-alert-info { background: rgba(96, 165, 250, .1); border-color: rgba(96, 165, 250, .35); color: #93c5fd; }
+.pf-alert-erro { background: rgba(239, 68, 68, .1); border-color: rgba(239, 68, 68, .35); color: #fca5a5; }
+
+/* Modais no tema escuro */
+.modal-content { background: var(--pf-surface); border: 1px solid var(--pf-border); border-radius: 16px; color: var(--pf-text); }
+.modal-header, .modal-footer { border-color: var(--pf-border); }
+
+/* Card clicável (treinos) */
+.pf-card-clicavel { cursor: pointer; transition: border-color .15s, transform .15s; }
+.pf-card-clicavel:hover,
+.pf-card-clicavel:focus-visible { border-color: var(--pf-green); transform: translateY(-2px); outline: none; }
+
 .input-group-text {
     background-color: var(--pf-surface-2);
     border: 1px solid var(--pf-border);
