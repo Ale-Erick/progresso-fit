@@ -41,15 +41,21 @@ profissionais habilitados.
 | Registrar medição | `/metricas/registrar/` |
 | Evolução corporal (indicadores, gráfico e histórico) | `/metricas/evolucao/` |
 | Detalhe da medição | `/metricas/detalhe/<id>/` |
-| Treinos | `/planos/treinos/` |
+| Treinos (detalhe de cada treino em modal) | `/planos/treinos/` |
 | Plano alimentar | `/planos/nutricao/` |
 | Painel do especialista | `/planos/validacoes/` |
 | Revisão de plano alimentar | `/planos/validacoes/<id>/` |
+| Solicitar plano alimentar (modal na tela de nutrição, envio por POST) | `/planos/nutricao/solicitar/` |
 | Administração | `/admin/` |
 
 As telas de evolução, detalhe, treinos, nutrição e painel do especialista **leem os dados do banco**.
-Os formulários (login, cadastro, registro de medição etc.) já têm validação no navegador,
-mas o processamento e a gravação dos dados ficam para a Etapa 2.
+Os formulários (login, cadastro, registro de medição etc.) já têm validação no navegador
+(campos obrigatórios marcados com *) e, ao serem enviados, levam à próxima tela do fluxo
+com um aviso de demonstração; o processamento e a gravação desses dados ficam para a Etapa 2.
+
+A **solicitação de plano alimentar** já grava no banco: o aluno escolhe o objetivo e um especialista
+verificado, e o plano é salvo como **Pendente**, com uma proposta simulada da IA, até ser revisado.
+Como o login do sistema é da Etapa 2, a solicitação usa o usuário logado pelo `/admin`.
 
 ### Modelos de dados
 

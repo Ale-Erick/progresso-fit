@@ -18,7 +18,8 @@
                 <div class="d-flex align-items-center gap-3 mb-3">
                     <span class="pf-avatar" id="foto-preview"><i class="bi bi-person"></i></span>
                     <div class="flex-grow-1">
-                        <label for="foto" class="form-label">Foto de perfil</label>
+                        <label for="foto" class="form-label">Foto de perfil <span class="text-secondary fw-normal">(opcional)</span></label>
+                        <div class="form-text">Imagem nos formatos JPG ou PNG.</div>
                         <input type="file" id="foto" name="foto" class="form-control" accept="image/*" data-tipos="image/">
                         <div class="invalid-feedback">Envie uma imagem.</div>
                     </div>
@@ -37,21 +38,25 @@
                 </div>
                 <div class="mb-3">
                     <label for="nivel_conhecimento" class="form-label">Nível de conhecimento corporal</label>
+                    <div class="form-text">Grau de controle consciente que você tem sobre cada movimento e músculo.</div>
                     <select id="nivel_conhecimento" name="nivel_conhecimento" class="form-select" required>
                         <option value="Iniciante" selected>Iniciante</option>
                         <option value="Intermediário">Intermediário</option>
                         <option value="Avançado">Avançado</option>
                     </select>
-                    <div class="form-text">Grau de controle consciente que você tem sobre cada movimento e músculo.</div>
                 </div>
                 <div class="mb-3">
-                    <label for="descricao" class="form-label">Descrição</label>
+                    <label for="descricao" class="form-label">Descrição <span class="text-secondary fw-normal">(opcional)</span></label>
+                    <div class="form-text">Conte um pouco sobre você e seus objetivos. Máximo de 150 caracteres.</div>
                     <textarea id="descricao" name="descricao" class="form-control" rows="3" maxlength="150" data-contador="descricao-contador">Focada em manter a constância nos treinos e melhorar o condicionamento físico.</textarea>
-                    <div class="form-text d-flex justify-content-between"><span>Máximo de 150 caracteres.</span><span id="descricao-contador"></span></div>
+                    <div class="form-text text-end" id="descricao-contador"></div>
                 </div>
-                <div class="mb-4 form-check">
-                    <input type="checkbox" class="form-check-input" id="publico" name="publico">
-                    <label class="form-check-label" for="publico">Tornar perfil público para outros usuários</label>
+                <div class="mb-4">
+                    <p class="form-label mb-1">Visibilidade <span class="text-secondary fw-normal">(opcional)</span></p>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="publico" name="publico">
+                        <label class="form-check-label" for="publico">Tornar perfil público para outros usuários</label>
+                    </div>
                 </div>
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-success px-4">Salvar alterações</button>

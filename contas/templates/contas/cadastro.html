@@ -2,6 +2,8 @@
 
 {% block title %}Cadastro - ProgressoFit{% endblock %}
 
+{% block header %}{% include 'includes/header_simples.html' %}{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
@@ -22,22 +24,30 @@
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail</label>
+                    <div class="form-text">Enviaremos um link para confirmar seu e-mail antes do primeiro acesso.</div>
                     <input type="email" id="email" name="email" class="form-control" placeholder="seu@email.com" required>
                     <div class="invalid-feedback">Informe um e-mail válido.</div>
-                    <div class="form-text">Enviaremos um link para confirmar seu e-mail antes do primeiro acesso.</div>
                 </div>
                 <div class="row">
                     <div class="col-sm-6 mb-3">
                         <label for="password" class="form-label">Senha</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Crie uma senha forte" minlength="8" required>
-                        <div class="invalid-feedback">A senha deve ter pelo menos 8 caracteres.</div>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Crie uma senha forte" minlength="8" pattern=".*\D.*" required>
+                        <div class="invalid-feedback">A senha não atende aos requisitos abaixo.</div>
                     </div>
-                    <div class="col-sm-6 mb-4">
+                    <div class="col-sm-6 mb-3">
                         <label for="password_confirm" class="form-label">Confirmar senha</label>
                         <input type="password" id="password_confirm" name="password_confirm" class="form-control" placeholder="Repita a senha" data-confirma="password" required>
                         <div class="invalid-feedback">As senhas não coincidem.</div>
                     </div>
                 </div>
+                <p class="small fw-semibold mb-1">Sua senha precisa:</p>
+                <ul class="pf-regras" id="regras-senha">
+                    <li data-regra="tamanho"><i class="bi bi-circle"></i> Ter pelo menos 8 caracteres</li>
+                    <li data-regra="numeros"><i class="bi bi-circle"></i> Não ser formada só por números</li>
+                    <li><i class="bi bi-dot"></i> Não ser parecida com seu nome ou e-mail</li>
+                    <li><i class="bi bi-dot"></i> Não ser uma senha comum (ex: 12345678, senha123)</li>
+                    <li data-regra="iguais"><i class="bi bi-circle"></i> Ser igual nos dois campos</li>
+                </ul>
                 <div class="d-grid">
                     <button type="submit" class="btn btn-success py-2">Criar conta</button>
                 </div>

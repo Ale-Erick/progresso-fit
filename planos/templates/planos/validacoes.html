@@ -11,24 +11,44 @@
     <span>Apenas especialistas com status <strong>verificado</strong> podem revisar planos. <a href="{% url 'contas:verificacao' %}">Solicitar verificação</a></span>
 </div>
 
-{% for plano in planos %}
-    <div class="pf-card pf-plan {% if plano.status == 'Pendente' %}warning{% elif plano.status == 'Rejeitado' %}danger{% else %}success{% endif %} mb-3">
-        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-2 mb-2">
-            <div>
-                <h2 class="h6 fw-semibold mb-1">{{ plano.titulo }}</h2>
-                <small class="text-secondary"><i class="bi bi-person me-1"></i> Aluno: {{ plano.user.username }} · {{ plano.created_at|date:"d/m/Y" }}</small>
-            </div>
-            <span class="pf-badge {% if plano.status == 'Pendente' %}warning{% elif plano.status == 'Rejeitado' %}danger{% else %}success{% endif %}">{{ plano.status }}</span>
-        </div>
-        <p class="text-secondary my-3" style="white-space: pre-line;">{{ plano.descricao|truncatechars:180 }}</p>
-        <a href="{% url 'planos:revisar' plano.id %}" class="btn btn-sm {% if plano.status == 'Pendente' %}btn-success{% else %}btn-ghost{% endif %}">
-            <i class="bi bi-clipboard-check me-1"></i> {% if plano.status == 'Pendente' %}Revisar plano{% else %}Ver revisão{% endif %}
-        </a>
+<div class="pf-card">
+    <h2 class="pf-card-title">Planos alimentares</h2>
+    {% if planos %}
+    <div class="table-responsive">
+        <table class="table table-hover pf-table">
+            <thead>
+                <tr>
+                    <th>Plano</th>
+                    <th>Aluno</th>
+                    <th>Especialista</th>
+                    <th>Enviado em</th>
+                    <th>Status</th>
+                    <th class="text-end">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for plano in planos %}
+                <tr>
+                    <td class="fw-semibold">{{ plano.titulo }}</td>
+                    <td>{{ plano.user.username }}</td>
+                    <td>{{ plano.especialista.nome|default:"-" }}</td>
+                    <td>{{ plano.created_at|date:"d/m/Y" }}</td>
+                    <td><span class="pf-badge {% if plano.status == 'Pendente' %}warning{% elif plano.status == 'Rejeitado' %}danger{% else %}success{% endif %}">{{ plano.status }}</span></td>
+                    <td class="text-end">
+                        <a href="{% url 'planos:revisar' plano.id %}" class="btn btn-sm {% if plano.status == 'Pendente' %}btn-success{% else %}btn-ghost{% endif %}">
+                            {% if plano.status == 'Pendente' %}Revisar{% else %}Ver revisão{% endif %}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
-{% empty %}
-    <div class="pf-card pf-empty">
+    {% else %}
+    <div class="pf-empty">
         <i class="bi bi-inbox"></i>
         <p class="mb-0">Nenhum plano aguardando validação.</p>
     </div>
-{% endfor %}
+    {% endif %}
+</div>
 {% endblock %}

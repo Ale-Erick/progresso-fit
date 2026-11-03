@@ -2,13 +2,58 @@ document.addEventListener("DOMContentLoaded", function () {
     var ano = document.getElementById("ano");
     if (ano) { ano.textContent = new Date().getFullYear(); }
 
+    marcarObrigatorios();
     validarFormularios();
     confirmarSenha();
+    checarRegrasSenha();
     contarCaracteres();
     validarArquivos();
     previewFoto();
     alternarAjuste();
+    abrirComTeclado();
 });
+
+// Cards clicáveis (ex.: treinos) também abrem com Enter ou espaço
+function abrirComTeclado() {
+    document.querySelectorAll("[role=button][data-bs-toggle]").forEach(function (card) {
+        card.addEventListener("keydown", function (evento) {
+            if (evento.key === "Enter" || evento.key === " ") {
+                evento.preventDefault();
+                card.click();
+            }
+        });
+    });
+}
+
+// Coloca * no rótulo de todo campo obrigatório e a legenda antes do botão de enviar
+function marcarObrigatorios() {
+    document.querySelectorAll("form").forEach(function (form) {
+        var temObrigatorio = false;
+
+        form.querySelectorAll("[required]").forEach(function (campo) {
+            var rotulo = campo.id ? form.querySelector("label[for='" + campo.id + "']") : null;
+            if (rotulo && !rotulo.classList.contains("btn")) {
+                rotulo.classList.add("pf-obrigatorio");
+                temObrigatorio = true;
+            }
+        });
+
+        var botao = form.querySelector("[type=submit]");
+        if (!temObrigatorio || !botao) { return; }
+
+        var legenda = document.createElement("p");
+        legenda.className = "pf-legenda-obrigatorio";
+        legenda.innerHTML = "<span>*</span> Campos obrigatórios";
+        var corpoModal = form.querySelector(".modal-body");
+        if (corpoModal) {
+            legenda.classList.add("mt-3", "mb-0");
+            corpoModal.appendChild(legenda);
+            return;
+        }
+        var bloco = botao.closest(".d-grid, .d-flex") || botao;
+        bloco.parentNode.insertBefore(legenda, bloco);
+    });
+}
 
 // Validação no navegador com o estilo do Bootstrap (formulários com a classe .pf-validar)
 function validarFormularios() {
@@ -49,6 +94,34 @@ function confirmarSenha() {
         campo.addEventListener("input", conferir);
         original.addEventListener("input", conferir);
     });
+}
+
+// Item 6: regras da senha no cadastro marcadas enquanto o usuário digita
+function checarRegrasSenha() {
+    var lista = document.getElementById("regras-senha");
+    var senha = document.getElementById("password");
+    var confirmacao = document.getElementById("password_confirm");
+    if (!lista || !senha) { return; }
+
+    var regras = {
+        tamanho: function () { return senha.value.length >= 8; },
+        numeros: function () { return senha.value !== "" && !/^\d+$/.test(senha.value); },
+        iguais: function () { return senha.value !== "" && confirmacao && senha.value === confirmacao.value; }
+    };
+
+    function atualizar() {
+        Object.keys(regras).forEach(function (nome) {
+            var item = lista.querySelector("[data-regra='" + nome + "']");
+            if (!item) { return; }
+            var ok = regras[nome]();
+            item.classList.toggle("ok", ok);
+            item.querySelector("i").className = ok ? "bi bi-check-circle-fill" : "bi bi-circle";
+        });
+    }
+
+    senha.addEventListener("input", atualizar);
+    if (confirmacao) { confirmacao.addEventListener("input", atualizar); }
+    atualizar();
 }
 
 // Contador de caracteres (descrição do perfil limitada a 150)
@@ -109,6 +182,7 @@ function alternarAjuste() {
             var ajustar = opcao.value === "Ajustado" && opcao.checked;
             campo.classList.toggle("d-none", !ajustar);
             texto.required = ajustar;
+            campo.querySelector("label").classList.toggle("pf-obrigatorio", ajustar);
         });
     });
 }

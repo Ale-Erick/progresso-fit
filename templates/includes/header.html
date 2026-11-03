@@ -11,8 +11,7 @@
         <div class="collapse navbar-collapse" id="menu">
             <ul class="navbar-nav mx-auto gap-lg-1 mt-3 mt-lg-0">
                 <li class="nav-item"><a class="nav-link {% if rota == 'contas:home' %}active{% endif %}" href="{% url 'contas:home' %}">Início</a></li>
-                <li class="nav-item"><a class="nav-link {% if rota == 'metricas:evolucao' or rota == 'metricas:detalhe' %}active{% endif %}" href="{% url 'metricas:evolucao' %}">Evolução</a></li>
-                <li class="nav-item"><a class="nav-link {% if rota == 'metricas:registrar' %}active{% endif %}" href="{% url 'metricas:registrar' %}">Registrar</a></li>
+                <li class="nav-item"><a class="nav-link {% if rota == 'metricas:evolucao' or rota == 'metricas:detalhe' or rota == 'metricas:registrar' %}active{% endif %}" href="{% url 'metricas:evolucao' %}">Evolução</a></li>
                 <li class="nav-item"><a class="nav-link {% if rota == 'planos:treinos' %}active{% endif %}" href="{% url 'planos:treinos' %}">Treinos</a></li>
                 <li class="nav-item"><a class="nav-link {% if rota == 'planos:nutricao' %}active{% endif %}" href="{% url 'planos:nutricao' %}">Nutrição</a></li>
                 <li class="nav-item"><a class="nav-link {% if rota == 'planos:validacoes' %}active{% endif %}" href="{% url 'planos:validacoes' %}">Especialista</a></li>
@@ -21,6 +20,7 @@
                 <a class="btn btn-ghost btn-sm px-3 {% if 'contas:perfil' in rota %}active{% endif %}" href="{% url 'contas:perfil' %}">
                     <i class="bi bi-person-circle me-1"></i> Perfil
                 </a>
+                <a class="btn btn-outline-success btn-sm px-3" href="{% url 'contas:cadastro' %}">Criar conta</a>
                 <a class="btn btn-success btn-sm px-3" href="{% url 'contas:login' %}">Entrar</a>
             </div>
         </div>

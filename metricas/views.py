@@ -1,5 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from contas.views import AVISO_DEMONSTRACAO
 from . import models
 
 
@@ -25,6 +27,10 @@ CIRCUNFERENCIAS = [
 
 
 def registrar_view(request):
+    # UC03: após registrar, o aluno é levado à tela de evolução
+    if request.method == "POST":
+        messages.info(request, AVISO_DEMONSTRACAO)
+        return redirect("metricas:evolucao")
     hoje = timezone.localdate()
     contexto = {"hoje": hoje, "circunferencias": CIRCUNFERENCIAS}
     return render(request, "metricas/registrar.html", contexto)

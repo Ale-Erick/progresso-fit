@@ -37,9 +37,9 @@
 
             <div class="mb-4 d-none" id="campo-ajuste">
                 <label for="descricao_ajustada" class="form-label">Plano ajustado</label>
+                <div class="form-text">O aluno verá esta versão no lugar da sugestão original.</div>
                 <textarea id="descricao_ajustada" name="descricao_ajustada" class="form-control" rows="6">{{ plano.descricao }}</textarea>
                 <div class="invalid-feedback">Descreva o plano ajustado.</div>
-                <div class="form-text">O aluno verá esta versão no lugar da sugestão original.</div>
             </div>
 
             <div class="mb-4">
@@ -47,9 +47,10 @@
                 <textarea id="observacao" name="observacao" class="form-control" rows="2"></textarea>
             </div>
 
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-success px-4" disabled title="Disponível em breve">Confirmar revisão</button>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <button type="submit" class="btn btn-success px-4" disabled>Confirmar revisão</button>
                 <a href="{% url 'planos:validacoes' %}" class="btn btn-ghost px-4">Cancelar</a>
+                <span class="small text-secondary">A confirmação da revisão estará disponível em breve.</span>
             </div>
         </form>
     </div>
