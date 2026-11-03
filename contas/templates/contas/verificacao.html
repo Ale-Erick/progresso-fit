@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Solicitar Verificação - ProgressoFit{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="pf-card p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <span class="pf-icon-box"><i class="bi bi-patch-check"></i></span>
+                <div>
+                    <h1 class="h3 fw-bold mb-0">Verificação de especialista</h1>
+                    <p class="text-secondary mb-0">Envie suas credenciais profissionais para análise</p>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 p-3 mb-4 rounded-3 border border-warning-subtle text-warning-emphasis small">
+                <i class="bi bi-info-circle"></i>
+                <span>Seu cadastro ficará <strong>pendente de verificação</strong> até que um administrador analise o documento. Só especialistas verificados podem revisar planos alimentares.</span>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="pf-validar" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="area_atuacao" class="form-label">Área de atuação</label>
+                    <select id="area_atuacao" name="area_atuacao" class="form-select" required>
+                        <option value="" disabled selected>Selecione sua área</option>
+                        <option value="Nutricionista">Nutricionista</option>
+                        <option value="Educador fisico">Educador físico</option>
+                        <option value="Médico do esporte">Médico do esporte</option>
+                    </select>
+                    <div class="invalid-feedback">Selecione sua área de atuação.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="registro_profissional" class="form-label">Registro profissional</label>
+                    <input type="text" id="registro_profissional" name="registro_profissional" class="form-control" placeholder="Ex: CRN, CREF ou CRM" maxlength="50" required>
+                    <div class="invalid-feedback">Informe o número do registro profissional.</div>
+                </div>
+                <div class="mb-4">
+                    <label for="documento" class="form-label">Documento comprobatório</label>
+                    <div class="form-text">Envie um PDF ou imagem do seu registro profissional.</div>
+                    <input type="file" id="documento" name="documento" class="form-control" accept=".pdf,image/*" data-tipos="application/pdf,image/" required>
+                    <div class="invalid-feedback">Envie um arquivo PDF ou uma imagem.</div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success px-4">Enviar solicitação</button>
+                    <a href="{% url 'contas:perfil' %}" class="btn btn-ghost px-4">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

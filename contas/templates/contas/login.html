@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Entrar - ProgressoFit{% endblock %}
+
+{% block header %}{% include 'includes/header_simples.html' %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-5">
+        <div class="pf-card p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <span class="pf-icon-box"><i class="bi bi-box-arrow-in-right"></i></span>
+                <div>
+                    <h1 class="h3 fw-bold mb-0">Entrar</h1>
+                    <p class="text-secondary mb-0">Acesse sua conta para continuar</p>
+                </div>
+            </div>
+            <form method="post" class="pf-validar" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="email" class="form-label">E-mail</label>
+                    <div class="input-group has-validation">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="seu@email.com" required>
+                        <div class="invalid-feedback">Informe um e-mail válido.</div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between">
+                        <label for="password" class="form-label">Senha</label>
+                        <a href="{% url 'contas:recuperar_senha' %}" class="small">Esqueci minha senha</a>
+                    </div>
+                    <div class="input-group has-validation">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha" required>
+                        <div class="invalid-feedback">Informe sua senha.</div>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success py-2">Entrar</button>
+                    <button type="button" class="btn btn-ghost py-2" disabled><i class="bi bi-google me-1"></i> Entrar com Google</button>
+                </div>
+            </form>
+            <p class="text-center text-secondary small mt-4 mb-0">Ainda não tem conta? <a href="{% url 'contas:cadastro' %}">Cadastre-se</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

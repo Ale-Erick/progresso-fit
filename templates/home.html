@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="pf-hero mb-5">
+    <span class="pf-badge success mb-3"><i class="bi bi-shield-check"></i> Planos revisados por profissionais</span>
+    <h1>Acompanhe sua evolução</h1>
+    <p>Registre suas métricas corporais, visualize seu progresso ao longo do tempo e acesse treinos e planos alimentares revisados por especialistas habilitados.</p>
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+        <a class="btn btn-success btn-lg px-4" href="{% url 'planos:treinos' %}"><i class="bi bi-lightning-charge me-1"></i> Fazer novo treino</a>
+    </div>
+</section>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="pf-card pf-feature h-100">
+                    <span class="pf-icon-box sm"><i class="bi bi-rulers"></i></span>
+                    <h3>Métricas corporais</h3>
+                    <p>Registre peso, altura, percentual de gordura e circunferências. Cada medição vira parte do seu histórico.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="pf-card pf-feature h-100">
+                    <span class="pf-icon-box sm"><i class="bi bi-graph-up-arrow"></i></span>
+                    <h3>Evolução em gráficos</h3>
+                    <p>Acompanhe a variação do peso e do percentual de gordura em gráficos e tabelas.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="pf-card pf-feature h-100">
+                    <span class="pf-icon-box sm"><i class="bi bi-lightning-charge"></i></span>
+                    <h3>Treinos no seu nível</h3>
+                    <p>Treinos adequados ao seu nível de conhecimento corporal: iniciante, intermediário ou avançado.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="pf-card pf-feature h-100">
+                    <span class="pf-icon-box sm"><i class="bi bi-patch-check"></i></span>
+                    <h3>Nutrição com validação</h3>
+                    <p>Nenhum plano alimentar chega até você sem antes ser aprovado por um especialista verificado.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        {% include 'includes/aside.html' with altura_total=True %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu Perfil - ProgressoFit{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex gap-2 p-3 mb-4 rounded-3 border border-info-subtle text-info-emphasis small">
+            <i class="bi bi-info-circle"></i>
+            <span>Este é um <strong>perfil de exemplo</strong>. Seus dados aparecerão aqui depois que você entrar na sua conta.</span>
+        </div>
+        <div class="pf-card p-4 p-md-5">
+            <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="pf-avatar"><i class="bi bi-person"></i></span>
+                    <div>
+                        <h1 class="h3 fw-bold mb-0">Maria Souza</h1>
+                        <p class="text-secondary mb-0">@mariasouza</p>
+                    </div>
+                </div>
+                <a href="{% url 'contas:perfil_editar' %}" class="btn btn-outline-success"><i class="bi bi-pencil me-1"></i> Editar perfil</a>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6">
+                    <div class="pf-stat">
+                        <div class="pf-stat-label">Nível de conhecimento corporal</div>
+                        <div class="mt-2"><span class="pf-badge success">Iniciante</span></div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="pf-stat">
+                        <div class="pf-stat-label">Visibilidade do perfil</div>
+                        <div class="mt-2"><span class="pf-badge info"><i class="bi bi-lock"></i> Privado</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-secondary mb-1">Descrição <small>(opcional)</small></p>
+            <p>Focada em manter a constância nos treinos e melhorar o condicionamento físico.</p>
+
+            <hr class="my-4">
+
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div>
+                    <strong>Você é profissional da saúde?</strong>
+                    <p class="text-secondary small mb-0">Nutricionistas, educadores físicos e médicos do esporte podem revisar planos alimentares após a verificação.</p>
+                </div>
+                <a href="{% url 'contas:verificacao' %}" class="btn btn-ghost text-nowrap"><i class="bi bi-patch-check me-1"></i> Solicitar verificação</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

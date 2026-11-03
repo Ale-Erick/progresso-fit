@@ -1,0 +1,415 @@
+/* ProgressoFit - tema escuro (docs/tema.md) */
+:root,
+[data-bs-theme="dark"] {
+    --pf-bg: #0f1115;
+    --pf-surface: #1a1d24;
+    --pf-surface-2: #22262f;
+    --pf-border: #2a2f3a;
+    --pf-text: #e8e8e8;
+    --pf-muted: #9aa1ad;
+    --pf-green: #22c55e;
+    --pf-green-dark: #16a34a;
+    --pf-green-soft: rgba(34, 197, 94, .12);
+
+    --bs-body-bg: var(--pf-bg);
+    --bs-body-color: var(--pf-text);
+    --bs-secondary-color: var(--pf-muted);
+    --bs-border-color: var(--pf-border);
+    --bs-link-color: var(--pf-green);
+    --bs-link-color-rgb: 34, 197, 94;
+    --bs-link-hover-color: #4ade80;
+    --bs-link-hover-color-rgb: 74, 222, 128;
+    --bs-success: #22c55e;
+    --bs-success-rgb: 34, 197, 94;
+    --bs-form-valid-color: #22c55e;
+    --bs-form-valid-border-color: #22c55e;
+    --bs-font-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--pf-bg);
+    padding-top: 64px; /* espaço da navbar fixa */
+}
+
+main { flex: 1; }
+
+a { text-decoration: none; }
+
+/* ---------- Navbar ---------- */
+.pf-navbar {
+    min-height: 64px;
+    background: rgba(15, 17, 21, .92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: var(--pf-text);
+}
+
+.navbar-brand:hover { color: var(--pf-text); }
+
+.pf-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--pf-green-soft);
+    color: var(--pf-green);
+}
+
+.pf-navbar .nav-link {
+    color: var(--pf-muted);
+    font-weight: 500;
+    padding: .5rem .85rem !important;
+    border-radius: 8px;
+}
+
+.pf-navbar .nav-link:hover { color: var(--pf-text); }
+
+.pf-navbar .nav-link.active {
+    color: var(--pf-green);
+    background: var(--pf-green-soft);
+}
+
+.pf-navbar .navbar-toggler { border-color: var(--pf-border); }
+
+/* ---------- Botões ---------- */
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+
+.btn-success {
+    --bs-btn-bg: var(--pf-green);
+    --bs-btn-border-color: var(--pf-green);
+    --bs-btn-color: #04130a;
+    --bs-btn-hover-bg: var(--pf-green-dark);
+    --bs-btn-hover-border-color: var(--pf-green-dark);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-active-bg: var(--pf-green-dark);
+    --bs-btn-active-border-color: var(--pf-green-dark);
+    --bs-btn-disabled-bg: var(--pf-green);
+    --bs-btn-disabled-border-color: var(--pf-green);
+    --bs-btn-disabled-color: #04130a;
+}
+
+.btn-outline-success {
+    --bs-btn-color: var(--pf-green);
+    --bs-btn-border-color: var(--pf-green);
+    --bs-btn-hover-bg: var(--pf-green);
+    --bs-btn-hover-border-color: var(--pf-green);
+    --bs-btn-hover-color: #04130a;
+}
+
+.btn-ghost {
+    --bs-btn-color: var(--pf-text);
+    --bs-btn-bg: var(--pf-surface-2);
+    --bs-btn-border-color: var(--pf-border);
+    --bs-btn-hover-color: var(--pf-text);
+    --bs-btn-hover-bg: var(--pf-border);
+    --bs-btn-hover-border-color: var(--pf-border);
+}
+
+/* ---------- Cards ---------- */
+.card,
+.pf-card {
+    background: var(--pf-surface);
+    border: 1px solid var(--pf-border);
+    border-radius: 16px;
+    color: var(--pf-text);
+}
+
+.pf-card { padding: 1.5rem; }
+
+.pf-card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* Cabeçalho das páginas */
+.pf-page-header { margin-bottom: 1.75rem; }
+
+.pf-page-header h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: .25rem;
+}
+
+.pf-page-header p { color: var(--pf-muted); margin-bottom: 0; }
+
+/* Ícone em caixa (protótipo "Registrar medição") */
+.pf-icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--pf-green-soft);
+    border: 1px solid rgba(34, 197, 94, .25);
+    color: var(--pf-green);
+    font-size: 1.5rem;
+}
+
+.pf-icon-box.sm { width: 40px; height: 40px; border-radius: 10px; font-size: 1.15rem; }
+
+/* ---------- Indicadores (protótipo "Evolução") ---------- */
+.pf-stat {
+    background: var(--pf-surface);
+    border: 1px solid var(--pf-border);
+    border-radius: 16px;
+    padding: 1.15rem 1.25rem;
+    height: 100%;
+}
+
+.pf-stat-label { color: var(--pf-muted); font-size: .875rem; }
+
+.pf-stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: .15rem;
+}
+
+.pf-stat-value small { font-size: .95rem; font-weight: 500; color: var(--pf-muted); }
+
+.pf-stat-foot { color: var(--pf-muted); font-size: .8rem; margin-top: .35rem; }
+
+/* ---------- Formulários ---------- */
+.form-label { font-weight: 600; font-size: .95rem; }
+
+.form-control,
+.form-select {
+    background-color: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    color: var(--pf-text);
+    border-radius: 10px;
+    padding: .7rem .9rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--pf-surface-2);
+    color: var(--pf-text);
+    border-color: var(--pf-green);
+    box-shadow: 0 0 0 .2rem var(--pf-green-soft);
+}
+
+.form-control::placeholder { color: #6b7280; }
+
+.form-text { color: var(--pf-muted); }
+
+/* Texto de ajuda logo abaixo do rótulo, antes do campo */
+.form-label + .form-text,
+.form-label + .form-text + .form-text {
+    margin-top: -.35rem;
+    margin-bottom: .5rem;
+}
+
+/* Campos obrigatórios: * no rótulo e legenda no fim do formulário */
+.pf-obrigatorio::after { content: " *"; color: #ef4444; }
+
+.pf-legenda-obrigatorio { font-size: .85rem; color: var(--pf-muted); margin-bottom: .75rem; }
+.pf-legenda-obrigatorio span { color: #ef4444; }
+
+/* Regras da senha (cadastro) */
+.pf-regras { list-style: none; padding: 0; margin: 0 0 1.25rem; font-size: .85rem; color: var(--pf-muted); }
+.pf-regras li { display: flex; align-items: center; gap: .45rem; padding: .15rem 0; }
+.pf-regras li.ok { color: var(--pf-green); }
+
+/* Mensagens do sistema */
+.pf-alert { border-radius: 12px; border: 1px solid; }
+.pf-alert-sucesso { background: var(--pf-green-soft); border-color: rgba(34, 197, 94, .35); color: #86efac; }
+.pf-alert-info { background: rgba(96, 165, 250, .1); border-color: rgba(96, 165, 250, .35); color: #93c5fd; }
+.pf-alert-erro { background: rgba(239, 68, 68, .1); border-color: rgba(239, 68, 68, .35); color: #fca5a5; }
+
+/* Modais no tema escuro */
+.modal-content { background: var(--pf-surface); border: 1px solid var(--pf-border); border-radius: 16px; color: var(--pf-text); }
+.modal-header, .modal-footer { border-color: var(--pf-border); }
+
+/* Card clicável (treinos) */
+.pf-card-clicavel { cursor: pointer; transition: border-color .15s, transform .15s; }
+.pf-card-clicavel:hover,
+.pf-card-clicavel:focus-visible { border-color: var(--pf-green); transform: translateY(-2px); outline: none; }
+
+.input-group-text {
+    background-color: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    color: var(--pf-muted);
+    border-radius: 10px;
+}
+
+.input-group > .form-control { border-left: 0; border-right: 0; }
+.input-group > .form-control:first-child { border-left: 1px solid var(--pf-border); }
+.input-group > .form-control:last-child { border-right: 1px solid var(--pf-border); }
+.input-group:focus-within .input-group-text,
+.input-group:focus-within .form-control { border-color: var(--pf-green); }
+.input-group:focus-within .form-control { box-shadow: none; }
+
+/* Validação: a cor de erro/acerto pinta a caixa inteira (campo + ícone + unidade) */
+.was-validated .input-group:has(.form-control:invalid) > .input-group-text,
+.was-validated .input-group:has(.form-control:invalid) > .form-control {
+    border-color: var(--bs-form-invalid-border-color);
+}
+
+.was-validated .input-group:has(.form-control:valid) > .input-group-text,
+.was-validated .input-group:has(.form-control:valid) > .form-control {
+    border-color: var(--bs-form-valid-border-color);
+}
+
+.was-validated .input-group .form-control:invalid:focus,
+.was-validated .input-group .form-control:valid:focus { box-shadow: none; }
+
+/* Campo opcional vazio: volta ao visual normal, sem o "✓" verde */
+.was-validated .form-control.pf-neutro:valid,
+.was-validated .form-select.pf-neutro:valid {
+    border-color: var(--pf-border);
+    background-image: none;
+    padding-right: .9rem;
+}
+
+.was-validated .form-control.pf-neutro:valid:focus,
+.was-validated .form-select.pf-neutro:valid:focus {
+    border-color: var(--pf-green);
+    box-shadow: 0 0 0 .2rem var(--pf-green-soft);
+}
+
+.was-validated .input-group:has(.pf-neutro:valid) > .input-group-text,
+.was-validated .input-group:has(.pf-neutro:valid) > .form-control {
+    border-color: var(--pf-border);
+}
+
+.was-validated .input-group:has(.pf-neutro:valid):focus-within > .input-group-text,
+.was-validated .input-group:has(.pf-neutro:valid):focus-within > .form-control {
+    border-color: var(--pf-green);
+    box-shadow: none;
+}
+
+.was-validated .form-check-input.pf-neutro:valid:not(:checked) { border-color: var(--bs-border-color); }
+.was-validated .form-check-input.pf-neutro:valid ~ .form-check-label { color: inherit; }
+
+.form-check-input:checked { background-color: var(--pf-green); border-color: var(--pf-green); }
+
+/* ---------- Tabela (histórico) ---------- */
+.pf-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--pf-text);
+    --bs-table-border-color: var(--pf-border);
+    --bs-table-hover-bg: var(--pf-surface-2);
+    --bs-table-hover-color: var(--pf-text);
+    margin-bottom: 0;
+}
+
+.pf-table thead th {
+    color: var(--pf-muted);
+    font-weight: 500;
+    font-size: .875rem;
+    white-space: nowrap;
+}
+
+.pf-table td { vertical-align: middle; white-space: nowrap; }
+
+/* ---------- Status (badges) ---------- */
+.pf-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .3rem .7rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.pf-badge.success { color: var(--pf-green); background: var(--pf-green-soft); border-color: rgba(34, 197, 94, .3); }
+.pf-badge.warning { color: #f59e0b; background: rgba(245, 158, 11, .1); border-color: rgba(245, 158, 11, .3); }
+.pf-badge.danger { color: #ef4444; background: rgba(239, 68, 68, .1); border-color: rgba(239, 68, 68, .3); }
+.pf-badge.info { color: #60a5fa; background: rgba(96, 165, 250, .1); border-color: rgba(96, 165, 250, .3); }
+
+/* Card de plano com barra lateral de status (protótipo "Nutrição") */
+.pf-plan { border-left: 3px solid var(--pf-border); }
+.pf-plan.success { border-left-color: var(--pf-green); }
+.pf-plan.warning { border-left-color: #f59e0b; }
+.pf-plan.danger { border-left-color: #ef4444; }
+
+/* ---------- Home ---------- */
+.pf-hero {
+    text-align: center;
+    padding: 3.5rem 1rem 2.5rem;
+    background: radial-gradient(ellipse at top, rgba(34, 197, 94, .12), transparent 65%);
+    border-radius: 24px;
+}
+
+.pf-hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; }
+
+.pf-hero p { color: var(--pf-muted); max-width: 620px; margin: .75rem auto 1.75rem; font-size: 1.1rem; }
+
+.pf-feature h3 { font-size: 1.05rem; font-weight: 600; margin: 1rem 0 .4rem; }
+.pf-feature p { color: var(--pf-muted); font-size: .92rem; margin-bottom: 0; }
+
+/* ---------- Atalhos (aside) ---------- */
+.pf-shortcuts a {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .7rem .75rem;
+    border-radius: 10px;
+    color: var(--pf-text);
+}
+
+.pf-shortcuts a:hover { background: var(--pf-surface-2); }
+.pf-shortcuts i { color: var(--pf-green); font-size: 1.1rem; }
+
+/* ---------- Detalhe da medição ---------- */
+.pf-data-list .pf-data-item {
+    display: flex;
+    justify-content: space-between;
+    padding: .8rem 0;
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-data-list .pf-data-item:last-child { border-bottom: 0; }
+.pf-data-list .pf-data-item span { color: var(--pf-muted); }
+.pf-data-list .pf-data-item strong { font-weight: 600; }
+
+/* Estado vazio */
+.pf-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--pf-muted);
+}
+
+.pf-empty i { font-size: 2.25rem; color: var(--pf-green); display: block; margin-bottom: .75rem; }
+
+/* Avatar do perfil */
+.pf-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--pf-green-soft);
+    color: var(--pf-green);
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.pf-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+.pf-chart-box { position: relative; height: 260px; }
+
+/* Rodapé */
+.pf-footer {
+    border-top: 1px solid var(--pf-border);
+    color: var(--pf-muted);
+    font-size: .9rem;
+}
