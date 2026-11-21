@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.validators import FileExtensionValidator
 from django.db import models
 
 
@@ -8,8 +9,16 @@ class Perfil(models.Model):
         ("Intermediário", "Intermediário"),
         ("Avançado", "Avançado"),
     )
+    # tipo de conta escolhido no cadastro: define o que o usuário vê no sistema
+    TIPO_CHOICES = (
+        ("Aluno", "Aluno"),
+        ("Especialista", "Especialista"),
+    )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="perfil")
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default="Aluno")
+    # foto opcional; o arquivo é salvo em media/perfis/ (ImageField precisa do Pillow)
+    foto = models.ImageField(upload_to="perfis/", blank=True)
     nome_completo = models.CharField(max_length=150)
     descricao = models.CharField(max_length=150, blank=True)
     publico = models.BooleanField(default=False)
@@ -38,6 +47,11 @@ class Especialista(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="especialista")
     area_atuacao = models.CharField(max_length=30, choices=AREA_CHOICES)
     registro_profissional = models.CharField(max_length=50, unique=True)
+    # documento comprobatório (RF008): só PDF ou imagem, salvo em media/documentos/
+    documento = models.FileField(
+        upload_to="documentos/",
+        validators=[FileExtensionValidator(["pdf", "jpg", "jpeg", "png"])],
+    )
     status_verificacao = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default="Pendente"
     )

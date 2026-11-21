@@ -51,6 +51,9 @@ class PlanoAlimentar(models.Model):
     titulo = models.CharField(max_length=200)
     descricao = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pendente")
+    # preenchidos pelo especialista na revisão (UC10)
+    observacao = models.TextField(blank=True)
+    revisado_em = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
