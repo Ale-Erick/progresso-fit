@@ -15,14 +15,14 @@
         <div class="pf-stat">
             <div class="pf-stat-label">Peso atual</div>
             <div class="pf-stat-value text-success">{{ ultima.peso }} <small>kg</small></div>
-            <div class="pf-stat-foot">em {{ ultima.data|date:"d/m/Y" }}</div>
+            <div class="pf-stat-foot">{{ ultima.altura }} m · em {{ ultima.data|date:"d/m/Y" }}</div>
         </div>
     </div>
     <div class="col-6 col-lg-3">
         <div class="pf-stat">
-            <div class="pf-stat-label">Altura</div>
-            <div class="pf-stat-value">{{ ultima.altura }} <small>m</small></div>
-            <div class="pf-stat-foot">última medição</div>
+            <div class="pf-stat-label">Nível</div>
+            <div class="mt-2"><span class="pf-badge success">{{ nivel|default:"Não informado" }}</span></div>
+            <div class="pf-stat-foot mt-2">conhecimento corporal</div>
         </div>
     </div>
     <div class="col-6 col-lg-3">
@@ -55,7 +55,7 @@
 
 <div class="pf-card">
     <h2 class="pf-card-title">Histórico</h2>
-    {% if metricas %}
+    {% if ultima %}
     <div class="table-responsive">
         <table class="table table-hover pf-table">
             <thead>
@@ -68,7 +68,8 @@
                 </tr>
             </thead>
             <tbody>
-            {% for metrica in metricas %}
+            {# page_obj: só as medições da página atual (Paginator na view) #}
+            {% for metrica in page_obj %}
                 <tr>
                     <td>{{ metrica.data|date:"d/m/Y" }}</td>
                     <td>{{ metrica.peso }}</td>
@@ -80,6 +81,32 @@
             </tbody>
         </table>
     </div>
+
+    {# paginação: só aparece quando há mais de uma página #}
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Páginas do histórico" class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 mt-3">
+        <span class="small text-secondary">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        <ul class="pagination pagination-sm mb-0">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Página anterior">&laquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+            {% endif %}
+            {% for numero in page_obj.paginator.page_range %}
+                {% if numero == page_obj.number %}
+                    <li class="page-item active" aria-current="page"><span class="page-link">{{ numero }}</span></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ numero }}">{{ numero }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Próxima página">&raquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
     {% else %}
     <div class="pf-empty">
         <i class="bi bi-clipboard-data"></i>

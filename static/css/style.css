@@ -235,6 +235,22 @@ a { text-decoration: none; }
 .modal-content { background: var(--pf-surface); border: 1px solid var(--pf-border); border-radius: 16px; color: var(--pf-text); }
 .modal-header, .modal-footer { border-color: var(--pf-border); }
 
+/* Paginação (histórico de medições) nas cores do tema */
+.pagination {
+    --bs-pagination-bg: var(--pf-surface-2);
+    --bs-pagination-border-color: var(--pf-border);
+    --bs-pagination-color: var(--pf-text);
+    --bs-pagination-hover-bg: var(--pf-green-soft);
+    --bs-pagination-hover-color: var(--pf-green);
+    --bs-pagination-hover-border-color: var(--pf-border);
+    --bs-pagination-active-bg: var(--pf-green);
+    --bs-pagination-active-border-color: var(--pf-green);
+    --bs-pagination-active-color: #0f1115;
+    --bs-pagination-disabled-bg: var(--pf-surface);
+    --bs-pagination-disabled-border-color: var(--pf-border);
+    --bs-pagination-focus-box-shadow: 0 0 0 .2rem var(--pf-green-soft);
+}
+
 /* Card clicável (treinos) */
 .pf-card-clicavel { cursor: pointer; transition: border-color .15s, transform .15s; }
 .pf-card-clicavel:hover,
