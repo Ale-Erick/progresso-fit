@@ -34,6 +34,9 @@ urlpatterns = [
     ),
     # Rotas prontas do Django: logout, password_reset, password_change etc.
     path("accounts/", include("django.contrib.auth.urls")),
+    # Link do e-mail de recuperação de senha: é a mesma view do Django (PasswordResetConfirmView),
+    # só que numa rota curta, para o link caber em uma linha do e-mail (até 78 caracteres).
+    path("senha/<uidb64>/<token>/", auth_views.PasswordResetConfirmView.as_view(), name="redefinir_senha"),
     path("", include("contas.urls")),
     path("metricas/", include("metricas.urls")),
     path("planos/", include("planos.urls")),

@@ -167,3 +167,44 @@ class PerfilAutomaticoTest(TestCase):
         user.first_name = "Pedro"
         user.save()
         self.assertEqual(Perfil.objects.filter(user=user).count(), 1)
+
+
+class RecuperarSenhaTest(TestCase):
+    """Recuperação de senha com as views prontas do Django (password_reset)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="ana@exemplo.com", email="ana@exemplo.com", password="SenhaAntiga2026")
+
+    def test_login_tem_link_esqueci_minha_senha(self):
+        self.assertContains(self.client.get(reverse("login")), reverse("password_reset"))
+
+    def test_email_cadastrado_recebe_o_link(self):
+        resposta = self.client.post(reverse("password_reset"), {"email": "ana@exemplo.com"})
+        self.assertRedirects(resposta, reverse("password_reset_done"))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, "Redefinir senha - ProgressoFit")
+        self.assertIn("/senha/", mail.outbox[0].body)
+        # o link sai inteiro no terminal (sem a quebra "=" do quoted-printable)
+        self.assertNotIn("quoted-printable", mail.outbox[0].message().as_string())
+
+    def test_email_nao_cadastrado_mostra_a_mesma_tela_sem_enviar(self):
+        resposta = self.client.post(reverse("password_reset"), {"email": "ninguem@exemplo.com"})
+        self.assertRedirects(resposta, reverse("password_reset_done"))
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_link_do_email_permite_criar_nova_senha(self):
+        self.client.post(reverse("password_reset"), {"email": "ana@exemplo.com"})
+        link = link_do_email(mail.outbox[0])
+        # o Django troca o token da URL por "set-password" e redireciona (o token não fica no histórico)
+        resposta = self.client.get(link, follow=True)
+        self.assertTrue(resposta.context["validlink"])
+        resposta = self.client.post(resposta.redirect_chain[-1][0], {"new_password1": "SenhaNova2026!", "new_password2": "SenhaNova2026!"})
+        self.assertRedirects(resposta, reverse("password_reset_complete"))
+        # a senha nova funciona e a antiga não
+        self.assertTrue(self.client.login(username="ana@exemplo.com", password="SenhaNova2026!"))
+        self.assertFalse(self.client.login(username="ana@exemplo.com", password="SenhaAntiga2026"))
+
+    def test_link_invalido_mostra_aviso(self):
+        resposta = self.client.get(reverse("redefinir_senha", args=["MQ", "token-errado"]), follow=True)
+        self.assertFalse(resposta.context["validlink"])
+        self.assertContains(resposta, "Link inválido ou expirado")

@@ -93,10 +93,6 @@ def ativar_view(request, uidb64, token):
 
     return redirect("login")
 
-def recuperar_senha_view(request):
-    enviado = request.method == "POST"
-    return render(request, "contas/recuperar_senha.html", {"enviado": enviado})
-
 def perfil_view(request):
     return render(request, "contas/perfil.html")
 
