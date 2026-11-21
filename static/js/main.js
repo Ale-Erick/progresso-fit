@@ -99,8 +99,9 @@ function confirmarSenha() {
 // Item 6: regras da senha no cadastro marcadas enquanto o usuário digita
 function checarRegrasSenha() {
     var lista = document.getElementById("regras-senha");
-    var senha = document.getElementById("password");
-    var confirmacao = document.getElementById("password_confirm");
+    // ids gerados pelo UserCreationForm do Django: id_password1 e id_password2
+    var senha = document.getElementById("id_password1");
+    var confirmacao = document.getElementById("id_password2");
     if (!lista || !senha) { return; }
 
     var regras = {

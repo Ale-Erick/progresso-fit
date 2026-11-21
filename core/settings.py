@@ -143,13 +143,21 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Autenticação
 # https://docs.djangoproject.com/en/6.1/ref/settings/#login-url
-# Para onde o @login_required manda quem não está logado.
-# (A issue de autenticação troca para "login", a rota do django.contrib.auth.)
-LOGIN_URL = 'contas:login'
+# Para onde o @login_required manda quem não está logado
+# ("login" é o nome da rota que vem de django.contrib.auth.urls)
+LOGIN_URL = 'login'
 # Depois de entrar, o usuário vai para o perfil (UC02, passo 5)
 LOGIN_REDIRECT_URL = 'contas:perfil'
 # Depois de sair, volta para a tela de login
-LOGOUT_REDIRECT_URL = 'contas:login'
+LOGOUT_REDIRECT_URL = 'login'
+
+# Backends testados no login, em ordem:
+# 1) EmailBackend: entra com e-mail e senha (tela de login do sistema)
+# 2) ModelBackend: o padrão do Django, entra com username (usado no /admin)
+AUTHENTICATION_BACKENDS = [
+    'contas.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 
 # Mensagens (django.contrib.messages)
