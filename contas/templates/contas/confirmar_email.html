@@ -10,18 +10,34 @@
         <div class="pf-card p-4 p-md-5 text-center">
             <span class="pf-icon-box mx-auto mb-3"><i class="bi bi-envelope-check"></i></span>
             <h1 class="h3 fw-bold">Confirme seu e-mail</h1>
-            <p class="text-secondary">Sua conta foi criada! Enviamos um link de confirmação para o e-mail informado. Clique nele para ativar sua conta e fazer o primeiro acesso.</p>
+            <p class="text-secondary">Enviamos um link de confirmação para o e-mail informado no cadastro. Clique nele para ativar sua conta e fazer o primeiro acesso.</p>
 
             <div class="d-flex gap-2 p-3 my-4 rounded-3 border border-warning-subtle text-warning-emphasis small text-start">
                 <i class="bi bi-clock-history"></i>
-                <span>O link é de uso único e expira após algum tempo. Enquanto o e-mail não for confirmado, não será possível entrar.</span>
+                <span>O link é de uso único e expira em 3 dias. Enquanto o e-mail não for confirmado, não será possível entrar.</span>
             </div>
 
-            <div class="d-grid gap-2">
-                <a href="{% url 'contas:login' %}" class="btn btn-success py-2">Ir para o login</a>
-                <button type="button" class="btn btn-ghost py-2" disabled>Reenviar e-mail</button>
+            <div class="d-grid">
+                <a href="{% url 'login' %}" class="btn btn-success py-2">Ir para o login</a>
             </div>
-            <p class="text-secondary small mt-4 mb-0">Não encontrou? Verifique a caixa de spam.</p>
+
+            <hr class="my-4">
+
+            {# Reenviar o link: útil se o e-mail não chegou ou se o link expirou #}
+            <form method="post" class="pf-validar text-start" novalidate>
+                {% csrf_token %}
+                <label for="id_email" class="form-label">Não recebeu? Peça um novo link</label>
+                <div class="input-group has-validation">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="email" id="id_email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                           placeholder="seu@email.com" value="{{ form.email.value|default_if_none:'' }}" required>
+                    <div class="invalid-feedback">{{ form.email.errors.0|default:"Informe um e-mail válido." }}</div>
+                </div>
+                <div class="d-grid mt-3">
+                    <button type="submit" class="btn btn-ghost">Reenviar e-mail</button>
+                </div>
+            </form>
+            <p class="text-secondary small mt-3 mb-0">Verifique também a caixa de spam.</p>
         </div>
     </div>
 </div>
