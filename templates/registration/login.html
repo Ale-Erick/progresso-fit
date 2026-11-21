@@ -15,30 +15,42 @@
                     <p class="text-secondary mb-0">Acesse sua conta para continuar</p>
                 </div>
             </div>
+
+            {# erros gerais do LoginForm: e-mail/senha incorretos ou conta ainda não confirmada #}
+            {% if form.non_field_errors %}
+                <div class="alert pf-alert pf-alert-erro" role="alert">
+                    {% for erro in form.non_field_errors %}<i class="bi bi-exclamation-circle me-1"></i> {{ erro }}{% endfor %}
+                </div>
+            {% endif %}
+
             <form method="post" class="pf-validar" novalidate>
                 {% csrf_token %}
+                {# "next": página que o usuário tentou abrir antes do login (vem do @login_required) #}
+                <input type="hidden" name="next" value="{{ next }}">
                 <div class="mb-3">
-                    <label for="email" class="form-label">E-mail</label>
+                    <label for="id_username" class="form-label">E-mail</label>
                     <div class="input-group has-validation">
                         <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="seu@email.com" required>
+                        {# o campo se chama "username" porque é o nome que o AuthenticationForm usa #}
+                        <input type="email" id="id_username" name="username" class="form-control" placeholder="seu@email.com"
+                               value="{{ form.username.value|default_if_none:'' }}" autocomplete="email" required>
                         <div class="invalid-feedback">Informe um e-mail válido.</div>
                     </div>
                 </div>
                 <div class="mb-4">
                     <div class="d-flex justify-content-between">
-                        <label for="password" class="form-label">Senha</label>
+                        <label for="id_password" class="form-label">Senha</label>
                         <a href="{% url 'contas:recuperar_senha' %}" class="small">Esqueci minha senha</a>
                     </div>
                     <div class="input-group has-validation">
                         <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha" required>
+                        <input type="password" id="id_password" name="password" class="form-control" placeholder="Digite sua senha"
+                               autocomplete="current-password" required>
                         <div class="invalid-feedback">Informe sua senha.</div>
                     </div>
                 </div>
-                <div class="d-grid gap-2">
+                <div class="d-grid">
                     <button type="submit" class="btn btn-success py-2">Entrar</button>
-                    <button type="button" class="btn btn-ghost py-2" disabled><i class="bi bi-google me-1"></i> Entrar com Google</button>
                 </div>
             </form>
             <p class="text-center text-secondary small mt-4 mb-0">Ainda não tem conta? <a href="{% url 'contas:cadastro' %}">Cadastre-se</a></p>

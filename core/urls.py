@@ -17,10 +17,23 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import path, include
+
+from contas.forms import LoginForm
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # Login do Django usando o nosso formulário (e-mail no lugar do usuário).
+    # Fica antes do include abaixo para "accounts/login/" usar esta versão.
+    # redirect_authenticated_user: quem já está logado não vê a tela de login de novo.
+    path(
+        "accounts/login/",
+        auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True),
+        name="login",
+    ),
+    # Rotas prontas do Django: logout, password_reset, password_change etc.
+    path("accounts/", include("django.contrib.auth.urls")),
     path("", include("contas.urls")),
     path("metricas/", include("metricas.urls")),
     path("planos/", include("planos.urls")),
