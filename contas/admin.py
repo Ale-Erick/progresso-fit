@@ -3,9 +3,9 @@ from .models import Perfil, Especialista
 
 
 class PerfilAdmin(admin.ModelAdmin):
-    list_display = ("nome_completo", "user", "nivel_conhecimento", "publico")
+    list_display = ("nome_completo", "user", "tipo", "nivel_conhecimento", "publico")
     search_fields = ("nome_completo",)
-    list_filter = ("nivel_conhecimento",)
+    list_filter = ("tipo", "nivel_conhecimento")
 
 
 class EspecialistaAdmin(admin.ModelAdmin):

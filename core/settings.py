@@ -133,3 +133,36 @@ MAILERS = {
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",]
+
+
+# Arquivos enviados pelos usuários (foto de perfil e documento do especialista)
+# https://docs.djangoproject.com/en/6.1/topics/files/
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# Autenticação
+# https://docs.djangoproject.com/en/6.1/ref/settings/#login-url
+# Para onde o @login_required manda quem não está logado.
+# (A issue de autenticação troca para "login", a rota do django.contrib.auth.)
+LOGIN_URL = 'contas:login'
+# Depois de entrar, o usuário vai para o perfil (UC02, passo 5)
+LOGIN_REDIRECT_URL = 'contas:perfil'
+# Depois de sair, volta para a tela de login
+LOGOUT_REDIRECT_URL = 'contas:login'
+
+
+# Mensagens (django.contrib.messages)
+# Troca o nome da tag "error" por "danger", o nome que o Bootstrap usa
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
+
+# Remetente dos e-mails do sistema (confirmação de conta e recuperação de senha)
+DEFAULT_FROM_EMAIL = 'ProgressoFit <nao-responda@progressofit.local>'
