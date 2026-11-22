@@ -6,10 +6,7 @@
         <h1>Meus treinos</h1>
         <p>Fichas de treino adequadas ao seu nível de conhecimento corporal</p>
     </div>
-    <div class="text-md-end">
-        <button type="button" class="btn btn-success" disabled><i class="bi bi-stars me-1"></i> Gerar treino com IA</button>
-        <div class="small text-secondary mt-1">Disponível em breve</div>
-    </div>
+    <a href="{% url 'planos:treino_criar' %}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i> Novo treino</a>
 </div>
 
 <div class="row g-4">
@@ -96,6 +93,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Fechar</button>
+                        <a href="{% url 'planos:treino_editar' treino.id %}" class="btn btn-outline-success"><i class="bi bi-pencil me-1"></i> Editar ou excluir</a>
                     </div>
                 </div>
             </div>
@@ -106,7 +104,8 @@
             <div class="pf-card pf-empty">
                 <i class="bi bi-lightning-charge"></i>
                 <p class="mb-1">Nenhum treino cadastrado ainda.</p>
-                <p class="small mb-0">Suas fichas de treino aparecerão aqui, adequadas ao seu nível de conhecimento corporal.</p>
+                <p class="small mb-3">Monte sua primeira ficha com os exercícios, as séries e as repetições.</p>
+                <a href="{% url 'planos:treino_criar' %}" class="btn btn-outline-success">Criar primeiro treino</a>
             </div>
         </div>
     {% endfor %}
