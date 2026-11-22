@@ -421,6 +421,23 @@ a { text-decoration: none; }
 }
 
 .pf-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.pf-avatar.sm { width: 30px; height: 30px; font-size: 1rem; }
+
+/* Usuário logado no header: foto + nome, com link para o perfil */
+.pf-usuario {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    max-width: 220px;
+    padding: .2rem .75rem .2rem .25rem;
+    border: 1px solid var(--pf-border);
+    border-radius: 999px;
+    color: var(--pf-text);
+    font-size: .875rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+.pf-usuario:hover, .pf-usuario.active { border-color: var(--pf-green); color: var(--pf-green); }
 
 .pf-chart-box { position: relative; height: 260px; }
 

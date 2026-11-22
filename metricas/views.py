@@ -1,10 +1,12 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+
+# @aluno_required: exige login e conta do tipo Aluno (especialista não vê métricas)
+from contas.permissoes import aluno_required
 
 from . import forms, models
 
@@ -35,7 +37,7 @@ def medicoes_do_usuario(user):
     return models.MetricaCorporal.objects.filter(user=user).order_by("-data", "-created_at")
 
 
-@login_required
+@aluno_required
 def registrar_view(request):
     # UC03: registra a medição do aluno logado e leva à tela de evolução
     if request.method == "POST":
@@ -69,7 +71,7 @@ def registrar_view(request):
     return render(request, "metricas/registrar.html", contexto)
 
 
-@login_required
+@aluno_required
 def evolucao_view(request):
     metricas = medicoes_do_usuario(request.user)
     ultima = metricas.first()
@@ -106,7 +108,7 @@ def evolucao_view(request):
     return render(request, "metricas/lista.html", contexto)
 
 
-@login_required
+@aluno_required
 def detalhe_view(request, metrica_id):
     # user=request.user: a medição de outro aluno responde 404 (RN008)
     metrica = get_object_or_404(models.MetricaCorporal, id=metrica_id, user=request.user)
@@ -119,7 +121,7 @@ def detalhe_view(request, metrica_id):
     return render(request, "metricas/detalhe.html", contexto)
 
 
-@login_required
+@aluno_required
 @require_POST
 def excluir_view(request, metrica_id):
     # só exclui por POST (botão do modal de confirmação). Não existe edição:

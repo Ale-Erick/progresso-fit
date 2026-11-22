@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Início - ProgressoFit{% endblock %}
+{% block content %}
+{# Início do especialista: só o que está no diagrama de casos de uso (verificação e revisão de planos) #}
+<section class="pf-hero mb-5">
+    <span class="pf-badge success mb-3"><i class="bi bi-patch-check"></i> Área do especialista</span>
+    <p class="text-secondary mb-1">Olá, {{ user.perfil.nome_completo|default:user.email }}!</p>
+    <h1>Revise planos alimentares</h1>
+    <p>Depois de verificado pelo administrador, você aprova, ajusta ou rejeita os planos alimentares que os alunos enviam para você.</p>
+</section>
+
+<div class="row g-4 justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="pf-card h-100 d-flex flex-column">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="pf-icon-box sm"><i class="bi bi-patch-check"></i></span>
+                <h2 class="h5 fw-semibold mb-0">Verificação profissional</h2>
+            </div>
+            {% if especialista is None %}
+                <p class="text-secondary flex-grow-1">Você ainda não enviou seu registro profissional. Sem a verificação, não é possível revisar planos.</p>
+                <a href="{% url 'contas:verificacao' %}" class="btn btn-success">Enviar documentos</a>
+            {% elif especialista.status_verificacao == 'Verificado' %}
+                <p class="flex-grow-1"><span class="pf-badge success"><i class="bi bi-check-circle"></i> Verificado</span></p>
+                <a href="{% url 'contas:verificacao' %}" class="btn btn-ghost">Ver dados enviados</a>
+            {% elif especialista.status_verificacao == 'Rejeitado' %}
+                <p class="flex-grow-1"><span class="pf-badge danger"><i class="bi bi-x-circle"></i> Rejeitado</span> <span class="text-secondary small d-block mt-2">Confira seus dados e envie um novo documento.</span></p>
+                <a href="{% url 'contas:verificacao' %}" class="btn btn-success">Reenviar documentos</a>
+            {% else %}
+                <p class="flex-grow-1"><span class="pf-badge warning"><i class="bi bi-clock"></i> Pendente de verificação</span> <span class="text-secondary small d-block mt-2">O administrador está analisando seu documento.</span></p>
+                <a href="{% url 'contas:verificacao' %}" class="btn btn-ghost">Ver dados enviados</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-5">
+        <div class="pf-card h-100 d-flex flex-column">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="pf-icon-box sm"><i class="bi bi-clipboard-check"></i></span>
+                <h2 class="h5 fw-semibold mb-0">Planos para revisar</h2>
+            </div>
+            {% if especialista.status_verificacao == 'Verificado' %}
+                <p class="flex-grow-1"><span class="pf-stat-value">{{ pendentes }}</span> <span class="text-secondary">plano{{ pendentes|pluralize }} pendente{{ pendentes|pluralize }}</span></p>
+                <a href="{% url 'planos:validacoes' %}" class="btn btn-success">Abrir painel de validações</a>
+            {% else %}
+                <p class="text-secondary flex-grow-1">O painel de validações fica disponível depois que sua verificação for aprovada.</p>
+                <button type="button" class="btn btn-ghost" disabled>Painel bloqueado</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

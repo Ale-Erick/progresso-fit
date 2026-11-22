@@ -1,4 +1,4 @@
-{% with rota=request.resolver_match.view_name %}
+{% with rota=request.resolver_match.view_name tipo=user.perfil.tipo %}
 <nav class="navbar navbar-expand-lg fixed-top pf-navbar">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'contas:home' %}">
@@ -9,28 +9,43 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="menu">
-            <ul class="navbar-nav mx-auto gap-lg-1 mt-3 mt-lg-0">
-                <li class="nav-item"><a class="nav-link {% if rota == 'contas:home' %}active{% endif %}" href="{% url 'contas:home' %}">Início</a></li>
-                <li class="nav-item"><a class="nav-link {% if rota == 'metricas:evolucao' or rota == 'metricas:detalhe' or rota == 'metricas:registrar' %}active{% endif %}" href="{% url 'metricas:evolucao' %}">Evolução</a></li>
-                <li class="nav-item"><a class="nav-link {% if rota == 'planos:treinos' %}active{% endif %}" href="{% url 'planos:treinos' %}">Treinos</a></li>
-                <li class="nav-item"><a class="nav-link {% if rota == 'planos:nutricao' %}active{% endif %}" href="{% url 'planos:nutricao' %}">Nutrição</a></li>
-                <li class="nav-item"><a class="nav-link {% if rota == 'planos:validacoes' %}active{% endif %}" href="{% url 'planos:validacoes' %}">Especialista</a></li>
-            </ul>
-            <div class="d-flex gap-2 pb-3 pb-lg-0">
-                {% if user.is_authenticated %}
-                    <a class="btn btn-ghost btn-sm px-3 {% if 'contas:perfil' in rota %}active{% endif %}" href="{% url 'contas:perfil' %}">
-                        <i class="bi bi-person-circle me-1"></i> Perfil
+            {% if user.is_authenticated %}
+                {# o menu muda conforme o tipo de conta (diagrama de casos de uso do PDS) #}
+                <ul class="navbar-nav mx-auto gap-lg-1 mt-3 mt-lg-0">
+                    <li class="nav-item"><a class="nav-link {% if rota == 'contas:home' %}active{% endif %}" href="{% url 'contas:home' %}">Início</a></li>
+                    {% if tipo == 'Especialista' %}
+                        <li class="nav-item"><a class="nav-link {% if rota == 'planos:validacoes' or rota == 'planos:revisar' %}active{% endif %}" href="{% url 'planos:validacoes' %}">Painel de validações</a></li>
+                        <li class="nav-item"><a class="nav-link {% if rota == 'contas:verificacao' %}active{% endif %}" href="{% url 'contas:verificacao' %}">Verificação</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link {% if rota == 'metricas:evolucao' or rota == 'metricas:detalhe' or rota == 'metricas:registrar' %}active{% endif %}" href="{% url 'metricas:evolucao' %}">Evolução</a></li>
+                        <li class="nav-item"><a class="nav-link {% if rota == 'planos:treinos' %}active{% endif %}" href="{% url 'planos:treinos' %}">Treinos</a></li>
+                        <li class="nav-item"><a class="nav-link {% if rota == 'planos:nutricao' %}active{% endif %}" href="{% url 'planos:nutricao' %}">Nutrição</a></li>
+                    {% endif %}
+                </ul>
+                <div class="d-flex align-items-center gap-2 pb-3 pb-lg-0">
+                    {# usuário logado: foto (ou ícone) e nome, com link para o perfil #}
+                    <a class="pf-usuario {% if 'contas:perfil' in rota %}active{% endif %}" href="{% url 'contas:perfil' %}" title="Meu perfil">
+                        <span class="pf-avatar sm">
+                            {% if user.perfil.foto %}
+                                <img src="{{ user.perfil.foto.url }}" alt="">
+                            {% else %}
+                                <i class="bi bi-person"></i>
+                            {% endif %}
+                        </span>
+                        <span class="text-truncate">{{ user.perfil.nome_completo|default:user.email|default:user.username }}</span>
                     </a>
                     {# desde o Django 5, o logout só aceita POST: por isso é um formulário com csrf_token #}
                     <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-success btn-sm px-3"><i class="bi bi-box-arrow-right me-1"></i> Sair</button>
                     </form>
-                {% else %}
+                </div>
+            {% else %}
+                <div class="d-flex gap-2 ms-auto pb-3 pb-lg-0 mt-3 mt-lg-0">
                     <a class="btn btn-outline-success btn-sm px-3" href="{% url 'contas:cadastro' %}">Criar conta</a>
                     <a class="btn btn-success btn-sm px-3" href="{% url 'login' %}">Entrar</a>
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 </nav>
