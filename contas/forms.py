@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import UploadedFile
 
-from .models import Perfil
+from .models import Especialista, Perfil
 
 # tamanho máximo da foto de perfil: 2 MB (em bytes)
 TAMANHO_MAXIMO_FOTO = 2 * 1024 * 1024
@@ -91,3 +91,29 @@ class PerfilForm(forms.ModelForm):
         if isinstance(foto, UploadedFile) and foto.size > TAMANHO_MAXIMO_FOTO:
             raise forms.ValidationError("A foto deve ter no máximo 2 MB.")
         return foto
+
+
+# tamanho máximo do documento do especialista: 5 MB (em bytes)
+TAMANHO_MAXIMO_DOCUMENTO = 5 * 1024 * 1024
+
+
+class EspecialistaForm(forms.ModelForm):
+    """Solicitação de verificação profissional (RF008 / UC05).
+    O status não aparece no formulário: quem verifica é o administrador, pelo /admin (UC11)."""
+
+    class Meta:
+        model = Especialista
+        fields = ["area_atuacao", "registro_profissional", "documento"]
+        labels = {
+            "area_atuacao": "Área de atuação",
+            "registro_profissional": "Registro profissional",
+            "documento": "Documento comprobatório",
+        }
+
+    def clean_documento(self):
+        documento = self.cleaned_data.get("documento")
+        # a extensão (PDF, JPG ou PNG) já é conferida pelo FileExtensionValidator do model;
+        # aqui conferimos o tamanho, só de arquivos novos (UC05, exceção 3a)
+        if isinstance(documento, UploadedFile) and documento.size > TAMANHO_MAXIMO_DOCUMENTO:
+            raise forms.ValidationError("O documento deve ter no máximo 5 MB.")
+        return documento
