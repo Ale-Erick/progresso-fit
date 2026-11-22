@@ -18,9 +18,6 @@ from . import forms
 from .models import Perfil
 from .permissoes import eh_especialista, especialista_required
 
-# aviso exibido nos formulários que ainda não gravam dados (gravação na Etapa 2)
-AVISO_DEMONSTRACAO = "Demonstração: os dados ainda não são salvos nesta versão do sistema."
-
 
 @login_required
 def home_view(request):
@@ -170,8 +167,29 @@ def excluir_conta_view(request):
 
 @especialista_required
 def verificacao_view(request):
-    # UC05: a solicitação fica pendente de verificação pelo administrador
+    # UC05: o especialista envia área, registro e documento; o pedido fica Pendente
+    # até o administrador analisar no /admin (UC11, RN007)
+    especialista = getattr(request.user, "especialista", None)  # None se ainda não enviou
+    # pode enviar: na primeira vez ou depois de uma rejeição (para mandar um documento novo)
+    pode_enviar = especialista is None or especialista.status_verificacao == "Rejeitado"
+
     if request.method == "POST":
-        messages.info(request, f"Solicitação de verificação enviada para análise. {AVISO_DEMONSTRACAO}")
-        return redirect("contas:perfil")
-    return render(request, "contas/verificacao.html")
+        if not pode_enviar:
+            messages.warning(request, "Seu pedido já foi enviado e não pode ser alterado agora.")
+            return redirect("contas:verificacao")
+        # instance=especialista: no reenvio, atualiza o mesmo registro em vez de criar outro
+        form = forms.EspecialistaForm(request.POST, request.FILES, instance=especialista)
+        if form.is_valid():
+            pedido = form.save(commit=False)
+            pedido.user = request.user
+            pedido.status_verificacao = "Pendente"  # volta para análise, mesmo depois de rejeitado
+            pedido.save()
+            messages.success(request, "Pedido de verificação enviado! Aguarde a análise do administrador.")
+            return redirect("contas:verificacao")
+        else:
+            messages.error(request, "Não foi possível enviar o pedido. Verifique os campos destacados.")
+    else:
+        form = forms.EspecialistaForm(instance=especialista) if pode_enviar else None
+
+    contexto = {"especialista": especialista, "form": form, "pode_enviar": pode_enviar}
+    return render(request, "contas/verificacao.html", contexto)

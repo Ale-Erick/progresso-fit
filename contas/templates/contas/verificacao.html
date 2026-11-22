@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Solicitar Verificação - ProgressoFit{% endblock %}
+{% block title %}Verificação profissional - ProgressoFit{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -14,39 +14,81 @@
                 </div>
             </div>
 
-            <div class="d-flex gap-2 p-3 mb-4 rounded-3 border border-warning-subtle text-warning-emphasis small">
-                <i class="bi bi-info-circle"></i>
-                <span>Seu cadastro ficará <strong>pendente de verificação</strong> até que um administrador analise o documento. Só especialistas verificados podem revisar planos alimentares.</span>
-            </div>
+            {# situação do pedido, quando ele já foi enviado #}
+            {% if especialista %}
+                <div class="pf-stat mb-4">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+                        <span class="pf-stat-label">Situação do seu pedido</span>
+                        {% if especialista.status_verificacao == 'Verificado' %}
+                            <span class="pf-badge success"><i class="bi bi-check-circle"></i> Verificado</span>
+                        {% elif especialista.status_verificacao == 'Rejeitado' %}
+                            <span class="pf-badge danger"><i class="bi bi-x-circle"></i> Rejeitado</span>
+                        {% else %}
+                            <span class="pf-badge warning"><i class="bi bi-clock"></i> Pendente de verificação</span>
+                        {% endif %}
+                    </div>
+                    <div class="pf-data-list">
+                        <div class="pf-data-item"><span>Área de atuação</span><strong>{{ especialista.get_area_atuacao_display }}</strong></div>
+                        <div class="pf-data-item"><span>Registro profissional</span><strong>{{ especialista.registro_profissional }}</strong></div>
+                        <div class="pf-data-item"><span>Enviado em</span><strong>{{ especialista.created_at|date:"d/m/Y" }}</strong></div>
+                        {% if especialista.documento %}
+                            <div class="pf-data-item"><span>Documento</span><a href="{{ especialista.documento.url }}" target="_blank">Abrir documento <i class="bi bi-box-arrow-up-right"></i></a></div>
+                        {% endif %}
+                    </div>
+                </div>
 
+                {% if especialista.status_verificacao == 'Verificado' %}
+                    <p class="text-secondary">Tudo certo! Você já pode revisar os planos alimentares que os alunos enviarem para você.</p>
+                    <a href="{% url 'planos:validacoes' %}" class="btn btn-success">Abrir painel de validações</a>
+                {% elif especialista.status_verificacao == 'Pendente' %}
+                    <p class="text-secondary mb-0">O administrador está analisando seu documento. Enquanto isso, o painel de validações fica bloqueado.</p>
+                {% else %}
+                    <div class="d-flex gap-2 p-3 mb-4 rounded-3 border border-danger-subtle text-danger-emphasis small">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span>Seu pedido foi <strong>rejeitado</strong>. Confira os dados e envie um novo documento abaixo.</span>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="d-flex gap-2 p-3 mb-4 rounded-3 border border-warning-subtle text-warning-emphasis small">
+                    <i class="bi bi-info-circle"></i>
+                    <span>Seu cadastro ficará <strong>pendente de verificação</strong> até que um administrador analise o documento. Só especialistas verificados podem revisar planos alimentares.</span>
+                </div>
+            {% endif %}
+
+            {# formulário: aparece no primeiro envio e depois de uma rejeição #}
+            {% if pode_enviar %}
             <form method="post" enctype="multipart/form-data" class="pf-validar" novalidate>
                 {% csrf_token %}
                 <div class="mb-3">
-                    <label for="area_atuacao" class="form-label">Área de atuação</label>
-                    <select id="area_atuacao" name="area_atuacao" class="form-select" required>
-                        <option value="" disabled selected>Selecione sua área</option>
-                        <option value="Nutricionista">Nutricionista</option>
-                        <option value="Educador fisico">Educador físico</option>
-                        <option value="Médico do esporte">Médico do esporte</option>
+                    <label for="id_area_atuacao" class="form-label">Área de atuação</label>
+                    <select id="id_area_atuacao" name="area_atuacao" class="form-select {% if form.area_atuacao.errors %}is-invalid{% endif %}" required>
+                        <option value="" {% if not form.area_atuacao.value %}selected{% endif %} disabled>Selecione sua área</option>
+                        {% for valor, rotulo in form.fields.area_atuacao.choices %}
+                            {% if valor %}<option value="{{ valor }}" {% if form.area_atuacao.value == valor %}selected{% endif %}>{{ rotulo }}</option>{% endif %}
+                        {% endfor %}
                     </select>
-                    <div class="invalid-feedback">Selecione sua área de atuação.</div>
+                    <div class="invalid-feedback">{{ form.area_atuacao.errors.0|default:"Selecione sua área de atuação." }}</div>
                 </div>
                 <div class="mb-3">
-                    <label for="registro_profissional" class="form-label">Registro profissional</label>
-                    <input type="text" id="registro_profissional" name="registro_profissional" class="form-control" placeholder="Ex: CRN, CREF ou CRM" maxlength="50" required>
-                    <div class="invalid-feedback">Informe o número do registro profissional.</div>
+                    <label for="id_registro_profissional" class="form-label">Registro profissional</label>
+                    <input type="text" id="id_registro_profissional" name="registro_profissional"
+                           class="form-control {% if form.registro_profissional.errors %}is-invalid{% endif %}"
+                           placeholder="Ex: CRN, CREF ou CRM" maxlength="50" value="{{ form.registro_profissional.value|default_if_none:'' }}" required>
+                    <div class="invalid-feedback">{{ form.registro_profissional.errors.0|default:"Informe o número do registro profissional." }}</div>
                 </div>
                 <div class="mb-4">
                     <label for="documento" class="form-label">Documento comprobatório</label>
-                    <div class="form-text">Envie um PDF ou imagem do seu registro profissional.</div>
-                    <input type="file" id="documento" name="documento" class="form-control" accept=".pdf,image/*" data-tipos="application/pdf,image/" required>
-                    <div class="invalid-feedback">Envie um arquivo PDF ou uma imagem.</div>
+                    <div class="form-text">PDF, JPG ou PNG do seu registro profissional, com até 5 MB.</div>
+                    <input type="file" id="documento" name="documento" class="form-control {% if form.documento.errors %}is-invalid{% endif %}"
+                           accept=".pdf,.jpg,.jpeg,.png" data-tipos="application/pdf,image/" required>
+                    <div class="invalid-feedback">{{ form.documento.errors.0|default:"Envie um arquivo PDF ou uma imagem." }}</div>
                 </div>
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success px-4">Enviar solicitação</button>
-                    <a href="{% url 'contas:perfil' %}" class="btn btn-ghost px-4">Voltar</a>
+                    <button type="submit" class="btn btn-success px-4">{% if especialista %}Reenviar pedido{% else %}Enviar pedido{% endif %}</button>
+                    <a href="{% url 'contas:home' %}" class="btn btn-ghost px-4">Voltar</a>
                 </div>
             </form>
+            {% endif %}
         </div>
     </div>
 </div>
