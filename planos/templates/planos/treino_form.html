@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}{% if treino %}Editar treino{% else %}Novo treino{% endif %} - ProgressoFit{% endblock %}
+{% block content %}
+{# mesmo template para criar e editar (como no CRUD de notícias da aula): "treino" só existe na edição #}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <a href="{% url 'planos:treinos' %}" class="text-secondary small"><i class="bi bi-arrow-left me-1"></i> Voltar para os treinos</a>
+        <form method="post" class="pf-card p-4 p-md-5 mt-2 pf-validar" novalidate>
+            {% csrf_token %}
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <span class="pf-icon-box"><i class="bi bi-lightning-charge"></i></span>
+                <div>
+                    <h1 class="h3 fw-bold mb-0">{% if treino %}Editar treino{% else %}Novo treino{% endif %}</h1>
+                    <p class="text-secondary mb-0">Monte sua ficha com os exercícios, as séries e as repetições</p>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_titulo" class="form-label">Título</label>
+                <input type="text" id="id_titulo" name="titulo" class="form-control {% if form.titulo.errors %}is-invalid{% endif %}"
+                       placeholder="Ex: Treino A - Peito e tríceps" maxlength="200" value="{{ form.titulo.value|default_if_none:'' }}" required>
+                <div class="invalid-feedback">{{ form.titulo.errors.0|default:"Informe o título do treino." }}</div>
+            </div>
+            <div class="mb-4">
+                <label for="id_descricao" class="form-label">Exercícios</label>
+                <div class="form-text">{{ form.descricao.help_text }}. As séries e as repetições aparecem separadas na ficha.</div>
+                <textarea id="id_descricao" name="descricao" class="form-control {% if form.descricao.errors %}is-invalid{% endif %}" rows="8"
+                          placeholder="Supino reto 4x10&#10;Crucifixo 3x12&#10;Tríceps corda 3x15" required>{{ form.descricao.value|default_if_none:'' }}</textarea>
+                <div class="invalid-feedback">{{ form.descricao.errors.0|default:"Informe pelo menos um exercício." }}</div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-success px-4">{% if treino %}Salvar alterações{% else %}Criar treino{% endif %}</button>
+                <a href="{% url 'planos:treinos' %}" class="btn btn-ghost px-4">Cancelar</a>
+                {% if treino %}
+                    <button type="button" class="btn btn-outline-danger ms-sm-auto" data-bs-toggle="modal" data-bs-target="#modal-excluir">
+                        <i class="bi bi-trash me-1"></i> Excluir treino
+                    </button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if treino %}
+{# modal de confirmação: a exclusão só acontece pelo POST deste formulário #}
+<div class="modal fade" id="modal-excluir" tabindex="-1" aria-labelledby="modal-excluir-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="h5 fw-bold mb-0" id="modal-excluir-titulo">Excluir treino</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                Deseja mesmo excluir o treino <strong>{{ treino.titulo }}</strong>? Isso não pode ser desfeito.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                <form method="post" action="{% url 'planos:treino_excluir' treino.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i> Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
