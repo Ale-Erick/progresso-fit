@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -9,13 +10,26 @@ from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
+from planos.models import PlanoAlimentar
+
 from . import forms
+from .permissoes import eh_especialista, especialista_required
 
 # aviso exibido nos formulários que ainda não gravam dados (gravação na Etapa 2)
 AVISO_DEMONSTRACAO = "Demonstração: os dados ainda não são salvos nesta versão do sistema."
 
 
+@login_required
 def home_view(request):
+    # sem login, o @login_required manda para a tela de login
+    if eh_especialista(request.user):
+        # Início do especialista: situação da verificação e planos esperando revisão
+        especialista = getattr(request.user, "especialista", None)
+        pendentes = 0
+        if especialista is not None:
+            pendentes = PlanoAlimentar.objects.filter(especialista=especialista, status="Pendente").count()
+        contexto = {"especialista": especialista, "pendentes": pendentes}
+        return render(request, "home_especialista.html", contexto)
     return render(request, "home.html")
 
 
@@ -93,9 +107,11 @@ def ativar_view(request, uidb64, token):
 
     return redirect("login")
 
+@login_required
 def perfil_view(request):
     return render(request, "contas/perfil.html")
 
+@login_required
 def perfil_editar_view(request):
     # UC04: após salvar, volta para o perfil
     if request.method == "POST":
@@ -103,6 +119,7 @@ def perfil_editar_view(request):
         return redirect("contas:perfil")
     return render(request, "contas/perfil_editar.html")
 
+@especialista_required
 def verificacao_view(request):
     # UC05: a solicitação fica pendente de verificação pelo administrador
     if request.method == "POST":
