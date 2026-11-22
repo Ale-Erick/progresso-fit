@@ -39,15 +39,18 @@
             <p class="text-secondary mb-1">Descrição <small>(opcional)</small></p>
             <p>Focada em manter a constância nos treinos e melhorar o condicionamento físico.</p>
 
+            {# só o especialista vê a verificação profissional (diagrama de casos de uso) #}
+            {% if user.perfil.tipo == 'Especialista' %}
             <hr class="my-4">
 
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
                 <div>
-                    <strong>Você é profissional da saúde?</strong>
-                    <p class="text-secondary small mb-0">Nutricionistas, educadores físicos e médicos do esporte podem revisar planos alimentares após a verificação.</p>
+                    <strong>Verificação profissional</strong>
+                    <p class="text-secondary small mb-0">Envie seu registro profissional. Depois de verificado pelo administrador, você pode revisar planos alimentares.</p>
                 </div>
-                <a href="{% url 'contas:verificacao' %}" class="btn btn-ghost text-nowrap"><i class="bi bi-patch-check me-1"></i> Solicitar verificação</a>
+                <a href="{% url 'contas:verificacao' %}" class="btn btn-ghost text-nowrap"><i class="bi bi-patch-check me-1"></i> Ver verificação</a>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -2,6 +2,7 @@
 {% block content %}
 <section class="pf-hero mb-5">
     <span class="pf-badge success mb-3"><i class="bi bi-shield-check"></i> Planos revisados por profissionais</span>
+    <p class="text-secondary mb-1">Olá, {{ user.perfil.nome_completo|default:user.email }}!</p>
     <h1>Acompanhe sua evolução</h1>
     <p>Registre suas métricas corporais, visualize seu progresso ao longo do tempo e acesse treinos e planos alimentares revisados por especialistas habilitados.</p>
     <div class="d-flex flex-wrap justify-content-center gap-2">
