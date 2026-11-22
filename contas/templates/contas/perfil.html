@@ -5,42 +5,67 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-9">
-        <div class="d-flex gap-2 p-3 mb-4 rounded-3 border border-info-subtle text-info-emphasis small">
-            <i class="bi bi-info-circle"></i>
-            <span>Este é um <strong>perfil de exemplo</strong>. Seus dados aparecerão aqui depois que você entrar na sua conta.</span>
-        </div>
         <div class="pf-card p-4 p-md-5">
             <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
                 <div class="d-flex align-items-center gap-3">
-                    <span class="pf-avatar"><i class="bi bi-person"></i></span>
+                    <span class="pf-avatar">
+                        {% if perfil.foto %}
+                            <img src="{{ perfil.foto.url }}" alt="Foto de {{ perfil.nome_completo }}">
+                        {% else %}
+                            <i class="bi bi-person"></i>
+                        {% endif %}
+                    </span>
                     <div>
-                        <h1 class="h3 fw-bold mb-0">Maria Souza</h1>
-                        <p class="text-secondary mb-0">@mariasouza</p>
+                        <h1 class="h3 fw-bold mb-0">{{ perfil.nome_completo }}</h1>
+                        <p class="text-secondary mb-0">@{{ user.username }}</p>
                     </div>
                 </div>
                 <a href="{% url 'contas:perfil_editar' %}" class="btn btn-outline-success"><i class="bi bi-pencil me-1"></i> Editar perfil</a>
             </div>
 
             <div class="row g-3 mb-4">
-                <div class="col-sm-6">
+                <div class="col-sm-6 col-lg-4">
                     <div class="pf-stat">
-                        <div class="pf-stat-label">Nível de conhecimento corporal</div>
-                        <div class="mt-2"><span class="pf-badge success">Iniciante</span></div>
+                        <div class="pf-stat-label">Tipo de conta</div>
+                        <div class="mt-2"><span class="pf-badge success">{{ perfil.tipo }}</span></div>
                     </div>
                 </div>
-                <div class="col-sm-6">
+                {% if perfil.tipo == 'Aluno' %}
+                <div class="col-sm-6 col-lg-4">
+                    <div class="pf-stat">
+                        <div class="pf-stat-label">Nível de conhecimento corporal</div>
+                        <div class="mt-2"><span class="pf-badge success">{{ perfil.nivel_conhecimento }}</span></div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-sm-6 col-lg-4">
                     <div class="pf-stat">
                         <div class="pf-stat-label">Visibilidade do perfil</div>
-                        <div class="mt-2"><span class="pf-badge info"><i class="bi bi-lock"></i> Privado</span></div>
+                        <div class="mt-2">
+                            {% if perfil.publico %}
+                                <span class="pf-badge info"><i class="bi bi-globe"></i> Público</span>
+                            {% else %}
+                                <span class="pf-badge info"><i class="bi bi-lock"></i> Privado</span>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <p class="text-secondary mb-1">Descrição <small>(opcional)</small></p>
-            <p>Focada em manter a constância nos treinos e melhorar o condicionamento físico.</p>
+            <div class="pf-data-list mb-4">
+                <div class="pf-data-item"><span>E-mail</span><strong>{{ user.email }}</strong></div>
+                <div class="pf-data-item"><span>Membro desde</span><strong>{{ user.date_joined|date:"d/m/Y" }}</strong></div>
+            </div>
+
+            <p class="text-secondary mb-1">Descrição</p>
+            {% if perfil.descricao %}
+                <p>{{ perfil.descricao }}</p>
+            {% else %}
+                <p class="text-secondary fst-italic">Você ainda não escreveu uma descrição. <a href="{% url 'contas:perfil_editar' %}">Adicionar</a></p>
+            {% endif %}
 
             {# só o especialista vê a verificação profissional (diagrama de casos de uso) #}
-            {% if user.perfil.tipo == 'Especialista' %}
+            {% if perfil.tipo == 'Especialista' %}
             <hr class="my-4">
 
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
@@ -51,6 +76,41 @@
                 <a href="{% url 'contas:verificacao' %}" class="btn btn-ghost text-nowrap"><i class="bi bi-patch-check me-1"></i> Ver verificação</a>
             </div>
             {% endif %}
+
+            <hr class="my-4">
+
+            {# "D" do CRUD: excluir a conta, com confirmação no modal #}
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div>
+                    <strong class="text-danger">Excluir conta</strong>
+                    <p class="text-secondary small mb-0">Apaga sua conta e todos os seus dados: perfil, medições, treinos e planos.</p>
+                </div>
+                <button type="button" class="btn btn-outline-danger text-nowrap" data-bs-toggle="modal" data-bs-target="#modal-excluir-conta">
+                    <i class="bi bi-trash me-1"></i> Excluir conta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-excluir-conta" tabindex="-1" aria-labelledby="modal-excluir-conta-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="h5 fw-bold mb-0" id="modal-excluir-conta-titulo">Excluir conta</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                Deseja mesmo excluir sua conta, <strong>{{ perfil.nome_completo }}</strong>?
+                Todos os seus dados serão apagados e isso não pode ser desfeito.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                <form method="post" action="{% url 'contas:excluir_conta' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i> Excluir minha conta</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

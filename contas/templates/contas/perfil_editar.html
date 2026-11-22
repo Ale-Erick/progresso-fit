@@ -13,49 +13,73 @@
                     <p class="text-secondary mb-0">Atualize suas informações pessoais</p>
                 </div>
             </div>
+            {# dois formulários do Django no mesmo <form>: usuario_form (User) e perfil_form (Perfil) #}
+            {# enctype="multipart/form-data" é obrigatório para enviar arquivos (a foto) #}
             <form method="post" enctype="multipart/form-data" class="pf-validar" novalidate>
                 {% csrf_token %}
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <span class="pf-avatar" id="foto-preview"><i class="bi bi-person"></i></span>
+                    <span class="pf-avatar" id="foto-preview">
+                        {% if perfil.foto %}
+                            <img src="{{ perfil.foto.url }}" alt="Foto atual">
+                        {% else %}
+                            <i class="bi bi-person"></i>
+                        {% endif %}
+                    </span>
                     <div class="flex-grow-1">
                         <label for="foto" class="form-label">Foto de perfil <span class="text-secondary fw-normal">(opcional)</span></label>
-                        <div class="form-text">Imagem nos formatos JPG ou PNG.</div>
-                        <input type="file" id="foto" name="foto" class="form-control" accept="image/*" data-tipos="image/">
-                        <div class="invalid-feedback">Envie uma imagem.</div>
+                        <div class="form-text">Imagem JPG ou PNG de até 2 MB.</div>
+                        <input type="file" id="foto" name="foto" class="form-control {% if perfil_form.foto.errors %}is-invalid{% endif %}"
+                               accept="image/*" data-tipos="image/">
+                        <div class="invalid-feedback">{{ perfil_form.foto.errors.0|default:"Envie uma imagem." }}</div>
+                        {% if perfil.foto %}
+                            {# "foto-clear" é o nome que o Django usa para apagar o arquivo do ImageField #}
+                            <div class="form-check mt-2">
+                                <input type="checkbox" class="form-check-input" id="foto-clear" name="foto-clear">
+                                <label class="form-check-label small" for="foto-clear">Remover foto atual</label>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-6 mb-3">
-                        <label for="username" class="form-label">Nome de usuário</label>
-                        <input type="text" id="username" name="username" class="form-control" value="mariasouza" pattern="[\w.@+\-]+" maxlength="150" required>
-                        <div class="invalid-feedback">Use letras, números e . @ + - _ (sem espaços).</div>
+                        <label for="id_username" class="form-label">Nome de usuário</label>
+                        <input type="text" id="id_username" name="username" class="form-control {% if usuario_form.username.errors %}is-invalid{% endif %}"
+                               value="{{ usuario_form.username.value|default_if_none:'' }}" pattern="[\w.@+\-]+" maxlength="150" required>
+                        <div class="invalid-feedback">{{ usuario_form.username.errors.0|default:"Use letras, números e . @ + - _ (sem espaços)." }}</div>
                     </div>
                     <div class="col-sm-6 mb-3">
-                        <label for="nome_completo" class="form-label">Nome completo</label>
-                        <input type="text" id="nome_completo" name="nome_completo" class="form-control" value="Maria Souza" maxlength="150" required>
-                        <div class="invalid-feedback">Informe seu nome completo.</div>
+                        <label for="id_nome_completo" class="form-label">Nome completo</label>
+                        <input type="text" id="id_nome_completo" name="nome_completo" class="form-control {% if perfil_form.nome_completo.errors %}is-invalid{% endif %}"
+                               value="{{ perfil_form.nome_completo.value|default_if_none:'' }}" maxlength="150" required>
+                        <div class="invalid-feedback">{{ perfil_form.nome_completo.errors.0|default:"Informe seu nome completo." }}</div>
                     </div>
                 </div>
+                {# o campo de nível só existe no formulário do aluno (o PerfilForm remove para o especialista) #}
+                {% if 'nivel_conhecimento' in perfil_form.fields %}
                 <div class="mb-3">
-                    <label for="nivel_conhecimento" class="form-label">Nível de conhecimento corporal</label>
+                    <label for="id_nivel_conhecimento" class="form-label">Nível de conhecimento corporal</label>
                     <div class="form-text">Grau de controle consciente que você tem sobre cada movimento e músculo.</div>
-                    <select id="nivel_conhecimento" name="nivel_conhecimento" class="form-select" required>
-                        <option value="Iniciante" selected>Iniciante</option>
-                        <option value="Intermediário">Intermediário</option>
-                        <option value="Avançado">Avançado</option>
+                    <select id="id_nivel_conhecimento" name="nivel_conhecimento" class="form-select {% if perfil_form.nivel_conhecimento.errors %}is-invalid{% endif %}" required>
+                        {% for valor, rotulo in perfil_form.fields.nivel_conhecimento.choices %}
+                            <option value="{{ valor }}" {% if perfil_form.nivel_conhecimento.value == valor %}selected{% endif %}>{{ rotulo }}</option>
+                        {% endfor %}
                     </select>
+                    <div class="invalid-feedback">{{ perfil_form.nivel_conhecimento.errors.0|default:"Selecione um nível." }}</div>
                 </div>
+                {% endif %}
                 <div class="mb-3">
-                    <label for="descricao" class="form-label">Descrição <span class="text-secondary fw-normal">(opcional)</span></label>
+                    <label for="id_descricao" class="form-label">Descrição <span class="text-secondary fw-normal">(opcional)</span></label>
                     <div class="form-text">Conte um pouco sobre você e seus objetivos. Máximo de 150 caracteres.</div>
-                    <textarea id="descricao" name="descricao" class="form-control" rows="3" maxlength="150" data-contador="descricao-contador">Focada em manter a constância nos treinos e melhorar o condicionamento físico.</textarea>
+                    <textarea id="id_descricao" name="descricao" class="form-control {% if perfil_form.descricao.errors %}is-invalid{% endif %}"
+                              rows="3" maxlength="150" data-contador="descricao-contador">{{ perfil_form.descricao.value|default_if_none:'' }}</textarea>
+                    <div class="invalid-feedback">{{ perfil_form.descricao.errors.0 }}</div>
                     <div class="form-text text-end" id="descricao-contador"></div>
                 </div>
                 <div class="mb-4">
                     <p class="form-label mb-1">Visibilidade <span class="text-secondary fw-normal">(opcional)</span></p>
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="publico" name="publico">
-                        <label class="form-check-label" for="publico">Tornar perfil público para outros usuários</label>
+                        <input type="checkbox" class="form-check-input" id="id_publico" name="publico" {% if perfil_form.publico.value %}checked{% endif %}>
+                        <label class="form-check-label" for="id_publico">Tornar perfil público para outros usuários</label>
                     </div>
                 </div>
                 <div class="d-flex gap-2">
