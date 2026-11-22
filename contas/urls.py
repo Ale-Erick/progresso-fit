@@ -13,5 +13,6 @@ urlpatterns = [
     # recuperar senha: rotas password_reset do django.contrib.auth (ver core/urls.py)
     path("perfil/", views.perfil_view, name="perfil"),
     path("perfil/editar/", views.perfil_editar_view, name="perfil_editar"),
+    path("perfil/excluir/", views.excluir_conta_view, name="excluir_conta"),
     path("especialista/verificacao/", views.verificacao_view, name="verificacao"),
 ]

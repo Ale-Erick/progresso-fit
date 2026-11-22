@@ -1,8 +1,12 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import UploadedFile
 
 from .models import Perfil
+
+# tamanho máximo da foto de perfil: 2 MB (em bytes)
+TAMANHO_MAXIMO_FOTO = 2 * 1024 * 1024
 
 
 class CadastroForm(UserCreationForm):
@@ -55,3 +59,35 @@ class ReenviarConfirmacaoForm(forms.Form):
     """Pede o e-mail para mandar de novo o link de confirmação."""
 
     email = forms.EmailField(label="E-mail")
+
+
+class UsuarioForm(forms.ModelForm):
+    """Parte do User que o usuário pode editar no perfil (UC04): o nome de usuário.
+    O ModelForm já confere se outro usuário usa o mesmo nome (UC04, exceção 4a)."""
+
+    class Meta:
+        model = User
+        fields = ["username"]
+        labels = {"username": "Nome de usuário"}
+
+
+class PerfilForm(forms.ModelForm):
+    """Dados do Perfil editados pelo usuário (RF004 e RF007)."""
+
+    class Meta:
+        model = Perfil
+        fields = ["foto", "nome_completo", "descricao", "nivel_conhecimento", "publico"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # o nível de conhecimento corporal é só do aluno (UC07): o especialista não vê esse campo
+        if self.instance.tipo == "Especialista":
+            del self.fields["nivel_conhecimento"]
+
+    def clean_foto(self):
+        foto = self.cleaned_data.get("foto")
+        # só confere arquivos novos (a foto que já estava salva não é enviada de novo)
+        # o ImageField já recusa arquivos que não são imagem
+        if isinstance(foto, UploadedFile) and foto.size > TAMANHO_MAXIMO_FOTO:
+            raise forms.ValidationError("A foto deve ter no máximo 2 MB.")
+        return foto

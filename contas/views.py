@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -9,10 +10,12 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.views.decorators.http import require_POST
 
 from planos.models import PlanoAlimentar
 
 from . import forms
+from .models import Perfil
 from .permissoes import eh_especialista, especialista_required
 
 # aviso exibido nos formulários que ainda não gravam dados (gravação na Etapa 2)
@@ -107,17 +110,63 @@ def ativar_view(request, uidb64, token):
 
     return redirect("login")
 
+
+def perfil_do_usuario(user):
+    # get_or_create: busca o perfil; se não existir (usuário criado antes do signal), cria na hora
+    perfil, criado = Perfil.objects.get_or_create(user=user, defaults={"nome_completo": user.username})
+    return perfil
+
+
 @login_required
 def perfil_view(request):
-    return render(request, "contas/perfil.html")
+    perfil = perfil_do_usuario(request.user)
+    return render(request, "contas/perfil.html", {"perfil": perfil})
+
 
 @login_required
 def perfil_editar_view(request):
-    # UC04: após salvar, volta para o perfil
+    # UC04: edita os dados do User (nome de usuário) e do Perfil (foto, nome, descrição...)
+    # Cópias novas do banco: se o formulário tiver erro, o header não mostra o que não foi salvo.
+    usuario = User.objects.get(pk=request.user.pk)
+    perfil = perfil_do_usuario(usuario)
+
     if request.method == "POST":
-        messages.info(request, AVISO_DEMONSTRACAO)
-        return redirect("contas:perfil")
-    return render(request, "contas/perfil_editar.html")
+        usuario_form = forms.UsuarioForm(request.POST, instance=usuario)
+        # request.FILES traz a foto enviada (o <form> precisa de enctype="multipart/form-data")
+        perfil_form = forms.PerfilForm(request.POST, request.FILES, instance=perfil)
+        # valida os dois antes do "if", para mostrar os erros dos dois formulários de uma vez
+        usuario_valido = usuario_form.is_valid()
+        perfil_valido = perfil_form.is_valid()
+        if usuario_valido and perfil_valido:
+            # atomic: User e Perfil são salvos juntos; se um falhar, nenhum é salvo
+            with transaction.atomic():
+                usuario_form.save()
+                perfil_form.save()
+            messages.success(request, "Perfil atualizado com sucesso!")
+            return redirect("contas:perfil")
+        else:
+            messages.error(request, "Não foi possível salvar. Verifique os campos destacados.")
+    else:
+        usuario_form = forms.UsuarioForm(instance=usuario)
+        perfil_form = forms.PerfilForm(instance=perfil)
+
+    contexto = {"usuario_form": usuario_form, "perfil_form": perfil_form, "perfil": perfil}
+    return render(request, "contas/perfil_editar.html", contexto)
+
+
+@login_required
+@require_POST
+def excluir_conta_view(request):
+    # "D" do CRUD do usuário: só por POST, pelo botão do modal de confirmação
+    user = request.user
+    perfil = perfil_do_usuario(user)
+    if perfil.foto:
+        perfil.foto.delete(save=False)  # apaga o arquivo da foto da pasta media/
+    logout(request)  # encerra a sessão antes de apagar o usuário
+    # apagar o User apaga em cascata o perfil, as medições, os treinos e os planos dele
+    user.delete()
+    messages.success(request, "Sua conta foi excluída.")
+    return redirect("login")
 
 @especialista_required
 def verificacao_view(request):
