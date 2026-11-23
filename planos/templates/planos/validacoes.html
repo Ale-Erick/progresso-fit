@@ -3,35 +3,37 @@
 {% block content %}
 <div class="pf-page-header">
     <h1>Painel de validação</h1>
-    <p>Revise, ajuste, aprove ou rejeite os planos alimentares dos alunos</p>
+    <p>Revise, ajuste, aprove ou rejeite os planos alimentares que os alunos enviaram para você</p>
 </div>
 
-<div class="d-flex gap-2 p-3 mb-4 rounded-3 border border-info-subtle text-info-emphasis small">
-    <i class="bi bi-info-circle"></i>
-    <span>Apenas especialistas com status <strong>verificado</strong> podem revisar planos. <a href="{% url 'contas:verificacao' %}">Solicitar verificação</a></span>
-</div>
+{# abas de filtro: cada uma é só um link com ?status=... (o filtro é feito na view) #}
+<ul class="nav nav-pills pf-filtros gap-2 mb-3">
+    {% for valor, rotulo in filtros %}
+        <li class="nav-item">
+            <a class="nav-link {% if status == valor %}active{% endif %}" href="?status={{ valor }}">{{ rotulo }}</a>
+        </li>
+    {% endfor %}
+</ul>
 
 <div class="pf-card">
     <h2 class="pf-card-title">Planos alimentares</h2>
-    {% if planos %}
+    {% if page_obj.object_list %}
     <div class="table-responsive">
         <table class="table table-hover pf-table">
             <thead>
                 <tr>
                     <th>Plano</th>
                     <th>Aluno</th>
-                    <th>Especialista</th>
                     <th>Enviado em</th>
                     <th>Status</th>
                     <th class="text-end">Ação</th>
                 </tr>
             </thead>
             <tbody>
-            {% for plano in planos %}
+            {% for plano in page_obj %}
                 <tr>
                     <td class="fw-semibold">{{ plano.titulo }}</td>
-                    <td>{{ plano.user.username }}</td>
-                    <td>{{ plano.especialista.nome|default:"-" }}</td>
+                    <td>{{ plano.user.perfil.nome_completo|default:plano.user.email }}</td>
                     <td>{{ plano.created_at|date:"d/m/Y" }}</td>
                     <td><span class="pf-badge {% if plano.status == 'Pendente' %}warning{% elif plano.status == 'Rejeitado' %}danger{% else %}success{% endif %}">{{ plano.status }}</span></td>
                     <td class="text-end">
@@ -44,10 +46,36 @@
             </tbody>
         </table>
     </div>
+
+    {# paginação: mantém o filtro de status nos links das páginas #}
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Páginas do painel" class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 mt-3">
+        <span class="small text-secondary">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        <ul class="pagination pagination-sm mb-0">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?status={{ status }}&page={{ page_obj.previous_page_number }}" aria-label="Página anterior">&laquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+            {% endif %}
+            {% for numero in page_obj.paginator.page_range %}
+                {% if numero == page_obj.number %}
+                    <li class="page-item active" aria-current="page"><span class="page-link">{{ numero }}</span></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?status={{ status }}&page={{ numero }}">{{ numero }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?status={{ status }}&page={{ page_obj.next_page_number }}" aria-label="Próxima página">&raquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
     {% else %}
     <div class="pf-empty">
         <i class="bi bi-inbox"></i>
-        <p class="mb-0">Nenhum plano aguardando validação.</p>
+        <p class="mb-0">{% if status == 'Pendente' %}Nenhum plano aguardando sua revisão.{% else %}Nenhum plano nesta lista.{% endif %}</p>
     </div>
     {% endif %}
 </div>

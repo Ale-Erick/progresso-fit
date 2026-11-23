@@ -7,52 +7,72 @@
         <h1 class="mb-0">{{ plano.titulo }}</h1>
         <span class="pf-badge {% if plano.status == 'Pendente' %}warning{% elif plano.status == 'Rejeitado' %}danger{% else %}success{% endif %}">{{ plano.status }}</span>
     </div>
-    <p class="mt-1">Aluno: {{ plano.user.username }} · enviado em {{ plano.created_at|date:"d/m/Y" }}</p>
+    <p class="mt-1">Aluno: {{ plano.user.perfil.nome_completo|default:plano.user.email }} · enviado em {{ plano.created_at|date:"d/m/Y" }}</p>
 </div>
 
 <div class="row g-4">
     <div class="col-lg-8">
         <div class="pf-card mb-4">
-            <h2 class="pf-card-title">Sugestão de plano alimentar</h2>
+            <h2 class="pf-card-title">{% if plano.status == 'Ajustado' %}Plano ajustado{% else %}Sugestão de plano alimentar{% endif %}</h2>
             <p class="text-secondary mb-0" style="white-space: pre-line;">{{ plano.descricao }}</p>
         </div>
 
-        <form method="post" class="pf-card pf-validar" novalidate>
-            {% csrf_token %}
-            <h2 class="pf-card-title">Sua decisão</h2>
-            <div class="row g-2 mb-3">
-                <div class="col-sm-4">
-                    <input type="radio" class="btn-check" name="decisao" id="decisao-aprovar" value="Aprovado" required>
-                    <label class="btn btn-outline-success w-100" for="decisao-aprovar"><i class="bi bi-check-lg me-1"></i> Aprovar</label>
+        {% if form %}
+            {# UC10, passo 4: o especialista escolhe aprovar, ajustar ou rejeitar #}
+            <form method="post" class="pf-card pf-validar" novalidate>
+                {% csrf_token %}
+                <h2 class="pf-card-title">Sua decisão</h2>
+                <div class="row g-2 mb-1">
+                    <div class="col-sm-4">
+                        <input type="radio" class="btn-check" name="decisao" id="decisao-aprovar" value="Aprovado" {% if form.decisao.value == 'Aprovado' %}checked{% endif %} required>
+                        <label class="btn btn-outline-success w-100" for="decisao-aprovar"><i class="bi bi-check-lg me-1"></i> Aprovar</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="radio" class="btn-check" name="decisao" id="decisao-ajustar" value="Ajustado" {% if form.decisao.value == 'Ajustado' %}checked{% endif %} required>
+                        <label class="btn btn-outline-warning w-100" for="decisao-ajustar"><i class="bi bi-pencil me-1"></i> Ajustar</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="radio" class="btn-check" name="decisao" id="decisao-rejeitar" value="Rejeitado" {% if form.decisao.value == 'Rejeitado' %}checked{% endif %} required>
+                        <label class="btn btn-outline-danger w-100" for="decisao-rejeitar"><i class="bi bi-x-lg me-1"></i> Rejeitar</label>
+                    </div>
                 </div>
-                <div class="col-sm-4">
-                    <input type="radio" class="btn-check" name="decisao" id="decisao-ajustar" value="Ajustado" required>
-                    <label class="btn btn-outline-warning w-100" for="decisao-ajustar"><i class="bi bi-pencil me-1"></i> Ajustar</label>
+                {% for erro in form.decisao.errors %}<div class="invalid-feedback d-block">{{ erro }}</div>{% endfor %}
+
+                {# o campo do plano ajustado só aparece quando a decisão é "Ajustar" (main.js: alternarAjuste) #}
+                <div class="mt-3 mb-3 {% if form.decisao.value != 'Ajustado' %}d-none{% endif %}" id="campo-ajuste">
+                    <label for="descricao_ajustada" class="form-label {% if form.decisao.value == 'Ajustado' %}pf-obrigatorio{% endif %}">Plano ajustado</label>
+                    <div class="form-text">O aluno verá esta versão no lugar da sugestão original.</div>
+                    <textarea id="descricao_ajustada" name="descricao_ajustada" class="form-control {% if form.descricao_ajustada.errors %}is-invalid{% endif %}"
+                              rows="6" {% if form.decisao.value == 'Ajustado' %}required{% endif %}>{{ form.descricao_ajustada.value|default_if_none:'' }}</textarea>
+                    <div class="invalid-feedback">{{ form.descricao_ajustada.errors.0|default:"Descreva o plano ajustado." }}</div>
                 </div>
-                <div class="col-sm-4">
-                    <input type="radio" class="btn-check" name="decisao" id="decisao-rejeitar" value="Rejeitado" required>
-                    <label class="btn btn-outline-danger w-100" for="decisao-rejeitar"><i class="bi bi-x-lg me-1"></i> Rejeitar</label>
+
+                <div class="mt-3 mb-4">
+                    <label for="observacao" class="form-label">Observação para o aluno <span class="text-secondary fw-normal">(opcional)</span></label>
+                    <textarea id="observacao" name="observacao" class="form-control {% if form.observacao.errors %}is-invalid{% endif %}"
+                              rows="2" maxlength="500">{{ form.observacao.value|default_if_none:'' }}</textarea>
+                    <div class="invalid-feedback">{{ form.observacao.errors.0 }}</div>
                 </div>
-            </div>
 
-            <div class="mb-4 d-none" id="campo-ajuste">
-                <label for="descricao_ajustada" class="form-label">Plano ajustado</label>
-                <div class="form-text">O aluno verá esta versão no lugar da sugestão original.</div>
-                <textarea id="descricao_ajustada" name="descricao_ajustada" class="form-control" rows="6">{{ plano.descricao }}</textarea>
-                <div class="invalid-feedback">Descreva o plano ajustado.</div>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <button type="submit" class="btn btn-success px-4">Confirmar revisão</button>
+                    <a href="{% url 'planos:validacoes' %}" class="btn btn-ghost px-4">Cancelar</a>
+                </div>
+            </form>
+        {% else %}
+            {# plano já revisado: só leitura #}
+            <div class="pf-card">
+                <h2 class="pf-card-title">Revisão</h2>
+                <div class="pf-data-list">
+                    <div class="pf-data-item"><span>Decisão</span><strong>{{ plano.status }}</strong></div>
+                    <div class="pf-data-item"><span>Revisado em</span><strong>{{ plano.revisado_em|date:"d/m/Y H:i"|default:"-" }}</strong></div>
+                </div>
+                {% if plano.observacao %}
+                    <p class="text-secondary mt-3 mb-1">Observação para o aluno</p>
+                    <p class="mb-0" style="white-space: pre-line;">{{ plano.observacao }}</p>
+                {% endif %}
             </div>
-
-            <div class="mb-4">
-                <label for="observacao" class="form-label">Observação para o aluno <span class="text-secondary fw-normal">(opcional)</span></label>
-                <textarea id="observacao" name="observacao" class="form-control" rows="2"></textarea>
-            </div>
-
-            <div class="d-flex flex-wrap align-items-center gap-2">
-                <button type="submit" class="btn btn-success px-4" disabled>Confirmar revisão</button>
-                <a href="{% url 'planos:validacoes' %}" class="btn btn-ghost px-4">Cancelar</a>
-                <span class="small text-secondary">A confirmação da revisão estará disponível em breve.</span>
-            </div>
-        </form>
+        {% endif %}
     </div>
 
     <div class="col-lg-4">
@@ -66,6 +86,7 @@
                     <div class="pf-data-item"><span>Gordura corporal</span><strong>{{ ultima.percentual_gordura|default_if_none:"-" }} %</strong></div>
                     <div class="pf-data-item"><span>Gordura visceral</span><strong>{{ ultima.gordura_visceral|default_if_none:"-" }}</strong></div>
                     <div class="pf-data-item"><span>Metabolismo basal</span><strong>{{ ultima.metabolismo_basal|default_if_none:"-" }} kcal</strong></div>
+                    <div class="pf-data-item"><span>Nível do aluno</span><strong>{{ plano.user.perfil.nivel_conhecimento|default:"-" }}</strong></div>
                 </div>
             {% else %}
                 <div class="pf-empty py-3">
