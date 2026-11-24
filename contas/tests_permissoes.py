@@ -17,6 +17,8 @@ def criar_usuario(email, tipo="Aluno"):
 ROTAS_DE_TODOS = ["contas:home", "contas:perfil", "contas:perfil_editar"]
 ROTAS_DO_ALUNO = ["metricas:registrar", "metricas:evolucao", "planos:treinos", "planos:nutricao"]
 ROTAS_DO_ESPECIALISTA = ["contas:verificacao", "planos:validacoes"]
+# o painel exige especialista VERIFICADO (RN007); ver planos/tests_revisao.py
+ROTAS_DO_ESPECIALISTA_SEM_VERIFICACAO = ["contas:verificacao"]
 
 
 class VisitanteTest(TestCase):
@@ -76,7 +78,7 @@ class EspecialistaTest(TestCase):
         self.client.force_login(self.especialista)
 
     def test_especialista_abre_as_rotas_do_especialista(self):
-        for nome in ROTAS_DE_TODOS + ROTAS_DO_ESPECIALISTA:
+        for nome in ROTAS_DE_TODOS + ROTAS_DO_ESPECIALISTA_SEM_VERIFICACAO:
             self.assertEqual(self.client.get(reverse(nome)).status_code, 200, nome)
 
     def test_especialista_nao_abre_rotas_do_aluno(self):

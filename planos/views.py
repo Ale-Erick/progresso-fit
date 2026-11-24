@@ -1,8 +1,10 @@
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 from contas.models import Especialista
-from contas.permissoes import aluno_required, especialista_required
+from contas.permissoes import aluno_required, especialista_verificado_required
 from metricas.models import MetricaCorporal
 from . import forms, models
 
@@ -118,15 +120,61 @@ def solicitar_plano_view(request):
     messages.success(request, f"Plano enviado para revisão de {especialista.nome}. Ele aparecerá aqui como pendente até ser aprovado.")
     return redirect("planos:nutricao")
 
-@especialista_required
-def validacoes_view(request):
-    planos = models.PlanoAlimentar.objects.select_related("user", "especialista__user").order_by("-created_at")
-    return render(request, "planos/validacoes.html", {"planos": planos})
+# filtros do painel: (valor do ?status=, texto da aba)
+FILTROS_STATUS = [
+    ("Pendente", "Pendentes"),
+    ("Aprovado", "Aprovados"),
+    ("Ajustado", "Ajustados"),
+    ("Rejeitado", "Rejeitados"),
+    ("Todos", "Todos"),
+]
 
-@especialista_required
+@especialista_verificado_required
+def validacoes_view(request):
+    # UC10, passo 2: só os planos enviados para o especialista logado (RN008)
+    planos = models.PlanoAlimentar.objects.filter(especialista=request.user.especialista)
+
+    # filtro por status pela URL (?status=Aprovado); sem filtro, mostra os pendentes
+    status = request.GET.get("status", "Pendente")
+    if status != "Todos":
+        planos = planos.filter(status=status)
+    planos = planos.select_related("user__perfil").order_by("-created_at")
+
+    paginator = Paginator(planos, 10)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
+    contexto = {"page_obj": page_obj, "status": status, "filtros": FILTROS_STATUS}
+    return render(request, "planos/validacoes.html", contexto)
+
+@especialista_verificado_required
 def revisar_view(request, plano_id):
-    plano = get_object_or_404(models.PlanoAlimentar, id=plano_id)
-    # métricas mais recentes do aluno para apoiar a revisão (UC10)
+    # o especialista só abre os planos enviados para ele; o de outro especialista dá 404 (RN008)
+    plano = get_object_or_404(models.PlanoAlimentar, id=plano_id, especialista=request.user.especialista)
+    # métricas mais recentes do aluno para apoiar a revisão (UC10, passo 3)
     ultima = MetricaCorporal.objects.filter(user=plano.user).order_by("-data", "-created_at").first()
-    contexto = {"plano": plano, "ultima": ultima}
+    pendente = plano.status == "Pendente"
+
+    if request.method == "POST":
+        if not pendente:
+            messages.warning(request, "Este plano já foi revisado.")
+            return redirect("planos:revisar", plano_id=plano.id)
+        form = forms.RevisaoForm(request.POST)
+        if form.is_valid():
+            decisao = form.cleaned_data["decisao"]
+            # UC10, passo 5: a decisão vira o status; Aprovado/Ajustado liberam o plano para o aluno (RN006)
+            plano.status = decisao
+            if decisao == "Ajustado":
+                plano.descricao = form.cleaned_data["descricao_ajustada"]
+            plano.observacao = form.cleaned_data["observacao"]
+            plano.revisado_em = timezone.now()
+            plano.save()
+            messages.success(request, f"Revisão salva: plano {decisao.lower()}.")
+            return redirect("planos:validacoes")
+        else:
+            messages.error(request, "Não foi possível salvar a revisão. Verifique os campos destacados.")
+    else:
+        # o plano já revisado abre só para leitura (sem formulário)
+        form = forms.RevisaoForm(initial={"descricao_ajustada": plano.descricao}) if pendente else None
+
+    contexto = {"plano": plano, "ultima": ultima, "form": form}
     return render(request, "planos/revisar.html", contexto)

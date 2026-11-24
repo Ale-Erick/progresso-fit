@@ -235,6 +235,11 @@ a { text-decoration: none; }
 .modal-content { background: var(--pf-surface); border: 1px solid var(--pf-border); border-radius: 16px; color: var(--pf-text); }
 .modal-header, .modal-footer { border-color: var(--pf-border); }
 
+/* Abas de filtro do painel de validações */
+.pf-filtros .nav-link { color: var(--pf-muted); border: 1px solid var(--pf-border); border-radius: 999px; padding: .3rem .9rem; font-size: .875rem; }
+.pf-filtros .nav-link:hover { color: var(--pf-green); border-color: var(--pf-green); }
+.pf-filtros .nav-link.active { background: var(--pf-green-soft); color: var(--pf-green); border-color: var(--pf-green); }
+
 /* Paginação (histórico de medições) nas cores do tema */
 .pagination {
     --bs-pagination-bg: var(--pf-surface-2);

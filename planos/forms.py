@@ -19,3 +19,26 @@ class TreinoForm(forms.ModelForm):
         if not linhas:
             raise forms.ValidationError("Informe pelo menos um exercício.")
         return descricao
+
+
+class RevisaoForm(forms.Form):
+    """Decisão do especialista sobre um plano alimentar (UC10 / RF010).
+    É um forms.Form (e não ModelForm) porque os campos não são iguais aos do model:
+    a decisão vira o status e o texto ajustado substitui a descrição."""
+
+    DECISOES = (
+        ("Aprovado", "Aprovar"),
+        ("Ajustado", "Ajustar"),
+        ("Rejeitado", "Rejeitar"),
+    )
+
+    decisao = forms.ChoiceField(choices=DECISOES, error_messages={"required": "Escolha aprovar, ajustar ou rejeitar."})
+    descricao_ajustada = forms.CharField(required=False)
+    observacao = forms.CharField(required=False, max_length=500)
+
+    def clean(self):
+        dados = super().clean()
+        # validação que depende de dois campos: "Ajustar" exige o plano ajustado
+        if dados.get("decisao") == "Ajustado" and not dados.get("descricao_ajustada", "").strip():
+            self.add_error("descricao_ajustada", "Descreva o plano ajustado que o aluno vai receber.")
+        return dados
